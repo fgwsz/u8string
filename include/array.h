@@ -27,4 +27,8 @@ public:
 private:
     void* impl_;
 };
+template<typename _Type>
+Array<_Type>::Array(){
+
+}
 #endif//__ARRAY_H__
