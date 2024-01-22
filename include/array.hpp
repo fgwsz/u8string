@@ -7,6 +7,7 @@ extern "C"{
 #include<utility> // std::move
 #include<new> // placement new
 #include<initializer_list> // std::initializer_list
+#include"iterator.hpp"
 template<typename _Type>
 class Array final{
 public:
@@ -59,6 +60,20 @@ public:
 
     template<typename OutputStream>
     constexpr OutputStream& debug_print(OutputStream& os)const noexcept;
+
+    using iterator=Iterator<Array<_Type>,_Type,false>;
+    using const_iterator=Iterator<Array<_Type>,_Type const,false>;
+    using reverse_iterator=Iterator<Array<_Type>,_Type,true>;
+    using const_reverse_iterator=Iterator<Array<_Type>,_Type const,true>;
+
+    constexpr iterator begin()noexcept;
+    constexpr iterator end()noexcept;
+    constexpr const_iterator cbegin()const noexcept;
+    constexpr const_iterator cend()const noexcept;
+    constexpr reverse_iterator rbegin()noexcept;
+    constexpr reverse_iterator rend()noexcept;
+    constexpr const_reverse_iterator crbegin()const noexcept;
+    constexpr const_reverse_iterator crend()const noexcept;
 private:
     struct Element{
         _Type* pointer_;
@@ -371,7 +386,7 @@ constexpr OutputStream& Array<_Type>::debug_print(OutputStream& os)const noexcep
         <<"data_:"<<this->data_<<'\n'
         <<"size_:"<<this->size_<<'\n'
         <<"capacity_:"<<this->capacity_<<'\n'
-        <<"elemnts:\n";
+        <<"elements:\n";
     for(size_t index=0;index<this->size_;++index){
         os<<"-----ELEMENT "<<index<<" BEGIN-----\n"
             <<"pointer_:"<<(this->data_[index]).pointer_<<'\n'
@@ -379,6 +394,40 @@ constexpr OutputStream& Array<_Type>::debug_print(OutputStream& os)const noexcep
             <<"-----ELEMENT "<<index<<" END-----\n";
     }
     return os<<"+++++ARRAY END+++++\n";
+}
+template<typename _Type>
+constexpr Array<_Type>::iterator Array<_Type>::begin()noexcept{
+    return iterator(this,0);
+}
+template<typename _Type>
+constexpr Array<_Type>::iterator Array<_Type>::end()noexcept{
+    return iterator(this,this->size_);
+}
+template<typename _Type>
+constexpr Array<_Type>::const_iterator Array<_Type>::cbegin()const noexcept{
+    return const_iterator(this,0);
+}
+template<typename _Type>
+constexpr Array<_Type>::const_iterator Array<_Type>::cend()const noexcept{
+    return const_iterator(this,this->size_);
+}
+template<typename _Type>
+constexpr Array<_Type>::reverse_iterator Array<_Type>::rbegin()noexcept{
+    return reverse_iterator(this,
+        static_cast<typename reserve_iterator::index_t>(this->size_)-1);
+}
+template<typename _Type>
+constexpr Array<_Type>::reverse_iterator Array<_Type>::rend()noexcept{
+    return reverse_iterator(this,-1);
+}
+template<typename _Type>
+constexpr Array<_Type>::const_reverse_iterator Array<_Type>::crbegin()const noexcept{
+    return const_reverse_iterator(this,
+        static_cast<typename const_reserve_iterator::index_t>(this->size_)-1);
+}
+template<typename _Type>
+constexpr Array<_Type>::const_reverse_iterator Array<_Type>::crend()const noexcept{
+    return const_reverse_iterator(this,-1);
 }
 template<typename _Type>
 constexpr void Array<_Type>::auto_expand_capacity()noexcept{
@@ -395,33 +444,3 @@ constexpr OutputStream& operator<<(OutputStream& os,Array<_Type>const& array)noe
     }
     return os<<']';
 }
-template<typename _Type>
-class ArrayIterator{
-public:
-    ArrayIterator(Array<_Type>& self,size_t index);
-    ArrayIterator(Array<_Type>const& self,size_t index);
-    _Type& operator*();
-    _Type const& operator*()const;
-    _Type* operator->();
-    _Type const* operator->()const;
-    ArrayIterator<_Type>& operator++();
-    ArrayIterator<_Type> operator++(int);
-    _Type& operator*(){
-        return (*(this->self_))[this->index_];
-    }
-    _Type const& operator*()const{
-        return (*(this->self_))[this->index_];
-    }
-    _Type* operator->(){
-        return &(this->operator*());
-    }
-    _Type const* operator->()const{
-        return &(this->operator*());
-    }
-    ArrayIterator<_Type>& operator++(){
-        
-    }
-private:
-    Array<_Type>* self_;
-    size_t index_;
-};
