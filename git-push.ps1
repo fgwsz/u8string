@@ -6,7 +6,6 @@ if($commit_info -eq "exit"){
     git add include/*
     git add src/*
     git add res/*
-    git add tests/*
     git add CMakeLists.txt
     git add build*.ps1
     git add clean.ps1

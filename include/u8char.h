@@ -1,7 +1,7 @@
 #ifndef __U8CHAR_H__
 #define __U8CHAR_H__
 extern "C"{
-    #include<stdint.h> // uint8_t,uint32_t
+#include<stdint.h> // uint8_t,uint32_t
 }
 class U8Char{
 public:
@@ -42,4 +42,11 @@ constexpr bool operator< (U8Char const& lhs,U8Char const& rhs)noexcept;
 constexpr bool operator<=(U8Char const& lhs,U8Char const& rhs)noexcept;
 constexpr bool operator> (U8Char const& lhs,U8Char const& rhs)noexcept;
 constexpr bool operator>=(U8Char const& lhs,U8Char const& rhs)noexcept;
+template<typename OutputStream>
+OutputStream& operator<<(OutputStream& os,U8Char ch){
+    for(U8Char::size_t index=0;index<ch.byte_count();++index){
+        os<<static_cast<char>(ch[index]);
+    }
+    return os;
+}
 #endif//__U8CHAR_H__

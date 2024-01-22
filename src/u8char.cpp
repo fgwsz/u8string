@@ -2,14 +2,14 @@
 // 通过输入utf8编码字符的首字节，得到该utf8字符的字节个数
 // 如果first_byte取值不符合utf8编码规则，则返回0
 static constexpr U8Char::size_t get_byte_count(U8Char::byte_t first_byte)noexcept{
-    static constexpr U8Char::byte_t utf8_1byte_min=0b00000000;
-    static constexpr U8Char::byte_t utf8_1byte_max=0b01111111;
-    static constexpr U8Char::byte_t utf8_2bytes_first_byte_min=0b11000000;
-    static constexpr U8Char::byte_t utf8_2bytes_first_byte_max=0b11011111;
-    static constexpr U8Char::byte_t utf8_3bytes_first_byte_min=0b11100000;
-    static constexpr U8Char::byte_t utf8_3bytes_first_byte_max=0b11101111;
-    static constexpr U8Char::byte_t utf8_4bytes_first_byte_min=0b11110000;
-    static constexpr U8Char::byte_t utf8_4bytes_first_byte_max=0b11110111;
+    constexpr U8Char::byte_t utf8_1byte_min=0b00000000;
+    constexpr U8Char::byte_t utf8_1byte_max=0b01111111;
+    constexpr U8Char::byte_t utf8_2bytes_first_byte_min=0b11000000;
+    constexpr U8Char::byte_t utf8_2bytes_first_byte_max=0b11011111;
+    constexpr U8Char::byte_t utf8_3bytes_first_byte_min=0b11100000;
+    constexpr U8Char::byte_t utf8_3bytes_first_byte_max=0b11101111;
+    constexpr U8Char::byte_t utf8_4bytes_first_byte_min=0b11110000;
+    constexpr U8Char::byte_t utf8_4bytes_first_byte_max=0b11110111;
     if(first_byte>=utf8_1byte_min&&
        first_byte<=utf8_1byte_max){
         return 1;
@@ -31,8 +31,8 @@ static constexpr U8Char::size_t get_byte_count(U8Char::byte_t first_byte)noexcep
 // 检查utf8编码多字节字符的除首字节之外的剩余单字节是否符合utf8编码规则
 // 如果符合返回true，反之返回false
 static constexpr bool check_other_byte(U8Char::byte_t other_byte)noexcept{
-    static constexpr U8Char::byte_t utf8_bytes_other_byte_min=0b10000000;
-    static constexpr U8Char::byte_t utf8_bytes_other_byte_max=0b10111111;
+    constexpr U8Char::byte_t utf8_bytes_other_byte_min=0b10000000;
+    constexpr U8Char::byte_t utf8_bytes_other_byte_max=0b10111111;
     return other_byte>=utf8_bytes_other_byte_min&&
            other_byte<=utf8_bytes_other_byte_max;
 }
@@ -54,7 +54,7 @@ constexpr U8Char::U8Char(char ch)noexcept
 constexpr U8Char& U8Char::operator=(char ch)noexcept{
     U8Char::byte_t first_byte=static_cast<U8Char::byte_t>(ch);
     if(::get_byte_count(first_byte)==0){
-        return;
+        return *this;
     }
     this->data_.byte_array_[0]=first_byte;
     for(U8Char::size_t index=1;index<4;++index){
