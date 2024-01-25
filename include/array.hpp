@@ -8,6 +8,7 @@ extern "C"{
 #include<utility> // std::move std::forward
 #include<new> // placement new
 #include<initializer_list> // std::initializer_list
+#include<type_traits> // std::remove_cvref_t
 #include"iterator.hpp"
 template<typename _Type>
 class Array final{
@@ -80,13 +81,17 @@ public:
     constexpr const_reverse_iterator crbegin()const noexcept;
     constexpr const_reverse_iterator crend()const noexcept;
 
-    // _Func:(_Type value)->_Type
+    // _Func:(_Type value)->_U(value_type not cvref)
+    // {E1,E2,...,En} --map(func)--> {func(E1),func(E2),...,func(En)}
     template<typename _Func>
-    constexpr Array<_Type> map(_Func&& func)const noexcept;
-    // _Func:(_Type value,_Type value)->_Type
-    template<typename _Func>
-    constexpr _Type reduce(_Func&& func)const noexcept;
+    constexpr auto map(_Func&& func)const noexcept
+        ->Array<std::remove_cvref_t<decltype(std::forward<_Func>(func)(_Type{}))>>;
+    // _Func:(_Ret value,_Type value)->_Ret
+    // {E1,E2,...,En} --reduce(func<like op(x,y)->z>,init)--> init op E1 op E2 ... op En
+    template<typename _Func,typename _Ret=_Type>
+    constexpr _Ret reduce(_Func&& func,_Ret&& init={})const noexcept;
     // _Func:(_Type value)->bool
+    // {E1,E2,...,En} --filter(func)-->[func(E)==true?]--> {Ex,Ey,...,Ez}
     template<typename _Func>
     constexpr Array<_Type> filter(_Func&& func)const noexcept;
 private:
@@ -472,17 +477,20 @@ constexpr void Array<_Type>::auto_expand_capacity()noexcept{
 }
 template<typename _Type>
 template<typename _Func>
-constexpr Array<_Type> Array<_Type>::map(_Func&& func)const noexcept{
-    Array<_Type> ret;
+constexpr auto Array<_Type>::map(_Func&& func)const noexcept
+    ->Array<std::remove_cvref_t<decltype(std::forward<_Func>(func)(_Type{}))>>{
+    using type=
+        std::remove_cvref_t<decltype(std::forward<_Func>(func)(_Type{}))>;
+    Array<type> ret;
     for(auto const& element:(*this)){
         ret.push_back(std::forward<_Func>(func)(element));
     }
     return ret;
 }
 template<typename _Type>
-template<typename _Func>
-constexpr _Type Array<_Type>::reduce(_Func&& func)const noexcept{
-    _Type ret{};
+template<typename _Func,typename _Ret>
+constexpr _Ret Array<_Type>::reduce(_Func&& func,_Ret&& init)const noexcept{
+    _Ret ret=std::forward<_Ret>(init);
     for(auto const& element:(*this)){
         ret=std::forward<_Func>(func)(ret,element);
     }
@@ -493,7 +501,7 @@ template<typename _Func>
 constexpr Array<_Type> Array<_Type>::filter(_Func&& func)const noexcept{
     Array<_Type> ret;
     for(auto const& element:(*this)){
-        if(std::forward<_Func>(func)){
+        if(std::forward<_Func>(func)(element)){
             ret.push_back(element);
         }
     }
