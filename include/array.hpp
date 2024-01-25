@@ -50,7 +50,7 @@ public:
     constexpr size_t size()const noexcept;
     constexpr size_t max_size()const noexcept;
     constexpr bool empty()const noexcept;
-    constexpr void resize(size_t size)noexcept;
+    constexpr void resize(size_t size,_Type const& value={})noexcept;
 
     constexpr void swap(Array<_Type>& array)noexcept;
     constexpr bool operator==(Array<_Type> const& array)const noexcept;
@@ -334,10 +334,10 @@ constexpr size_t Array<_Type>::max_size()const noexcept{
     return SIZE_MAX;
 }
 template<typename _Type>
-constexpr void Array<_Type>::resize(size_t size)noexcept{
+constexpr void Array<_Type>::resize(size_t size,_Type const& value)noexcept{
     if(size>this->size_){
         this->reserve_capacity(size);
-        this->insert(this->size_,_Type{},size-this->size_);
+        this->insert(this->size_,value,size-this->size_);
     }else if(size<this->size_){
         this->erase(size,this->size_-size);
     }

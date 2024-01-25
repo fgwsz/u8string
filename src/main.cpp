@@ -23,7 +23,11 @@ int main(){
     std::cout<<arr.reduce([](auto count,auto){return count+1;},1000)<<std::endl;;
     std::cout<<arr.map([](int value){return value*2;})
         .filter([](int value){return value>5;})
-        .reduce([](int val1,int val2){return val1+val2;});
-    arr.map([](int element){return Array<int>{element};}).debug_print(std::cout);
+        .reduce([](int val1,int val2){return val1+val2;})
+        <<std::endl;
+    arr.resize(10);
+    std::cout<<arr<<std::endl;
+    arr.resize(1);
+    std::cout<<arr<<std::endl;
     return 0;
 }
