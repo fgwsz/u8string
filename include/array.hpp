@@ -5,7 +5,7 @@ extern "C"{
 #include<stdlib.h> // malloc free realloc
 #include<string.h> // memmove
 } // extern "C"
-#include<utility> // std::move
+#include<utility> // std::move std::forward
 #include<new> // placement new
 #include<initializer_list> // std::initializer_list
 #include"iterator.hpp"
@@ -63,18 +63,32 @@ public:
     constexpr OutputStream& debug_print(OutputStream& os)const noexcept;
 
     using iterator=Iterator<Array<_Type>,_Type,false>;
-    using const_iterator=Iterator<Array<_Type>,_Type const,false>;
+    using const_iterator=Iterator<Array<_Type>const,_Type const,false>;
     using reverse_iterator=Iterator<Array<_Type>,_Type,true>;
-    using const_reverse_iterator=Iterator<Array<_Type>,_Type const,true>;
+    using const_reverse_iterator=Iterator<Array<_Type>const,_Type const,true>;
 
     constexpr iterator begin()noexcept;
     constexpr iterator end()noexcept;
+    constexpr const_iterator begin()const noexcept;
+    constexpr const_iterator end()const noexcept;
     constexpr const_iterator cbegin()const noexcept;
     constexpr const_iterator cend()const noexcept;
     constexpr reverse_iterator rbegin()noexcept;
     constexpr reverse_iterator rend()noexcept;
+    constexpr const_reverse_iterator rbegin()const noexcept;
+    constexpr const_reverse_iterator rend()const noexcept;
     constexpr const_reverse_iterator crbegin()const noexcept;
     constexpr const_reverse_iterator crend()const noexcept;
+
+    // _Func:(_Type value)->_Type
+    template<typename _Func>
+    constexpr Array<_Type> map(_Func&& func)const noexcept;
+    // _Func:(_Type value,_Type value)->_Type
+    template<typename _Func>
+    constexpr _Type reduce(_Func&& func)const noexcept;
+    // _Func:(_Type value)->bool
+    template<typename _Func>
+    constexpr Array<_Type> filter(_Func&& func)const noexcept;
 private:
     struct Element{
         _Type* pointer_;
@@ -383,18 +397,20 @@ constexpr Array<_Type> Array<_Type>::subarr(size_t index,size_t count)const noex
 template<typename _Type>
 template<typename OutputStream>
 constexpr OutputStream& Array<_Type>::debug_print(OutputStream& os)const noexcept{
-    os<<"+++++ARRAY BEGIN+++++\n"
-        <<"data_:"<<this->data_<<'\n'
-        <<"size_:"<<this->size_<<'\n'
-        <<"capacity_:"<<this->capacity_<<'\n'
-        <<"elements:\n";
+    os<<"Array{\n"
+        <<"\taddress:"<<this<<'\n'
+        <<"\tdata:"<<this->data_<<'\n'
+        <<"\tsize:"<<this->size_<<'\n'
+        <<"\tcapacity:"<<this->capacity_<<'\n';
     for(size_t index=0;index<this->size_;++index){
-        os<<"-----ELEMENT "<<index<<" BEGIN-----\n"
-            <<"pointer_:"<<(this->data_[index]).pointer_<<'\n'
-            <<"value:"<<*((this->data_[index]).pointer_)<<'\n'
-            <<"-----ELEMENT "<<index<<" END-----\n";
+        os<<"\tElement{\n"
+            <<"\t\tindex:"<<index<<'\n'
+            <<"\t\taddress:"<<&(this->data_[index])<<'\n'
+            <<"\t\tpointer:"<<(this->data_[index]).pointer_<<'\n'
+            <<"\t\tvalue:"<<*((this->data_[index]).pointer_)<<'\n'
+            <<"\t}\n";
     }
-    return os<<"+++++ARRAY END+++++\n";
+    return os<<"}\n";
 }
 template<typename _Type>
 constexpr typename Array<_Type>::iterator Array<_Type>::begin()noexcept{
@@ -405,12 +421,21 @@ constexpr typename Array<_Type>::iterator Array<_Type>::end()noexcept{
     return iterator(this,this->size_);
 }
 template<typename _Type>
+constexpr typename Array<_Type>::const_iterator Array<_Type>::begin()const noexcept{
+    return this->cbegin();
+}
+template<typename _Type>
+constexpr typename Array<_Type>::const_iterator Array<_Type>::end()const noexcept{
+    return this->cend();
+}
+template<typename _Type>
 constexpr typename Array<_Type>::const_iterator Array<_Type>::cbegin()const noexcept{
     return const_iterator(this,0);
 }
 template<typename _Type>
 constexpr typename Array<_Type>::const_iterator Array<_Type>::cend()const noexcept{
-    return const_iterator(this,this->size_);
+    return const_iterator(this,
+        static_cast<typename Array<_Type>::const_iterator::index_t>(this->size_));
 }
 template<typename _Type>
 constexpr typename Array<_Type>::reverse_iterator Array<_Type>::rbegin()noexcept{
@@ -420,6 +445,14 @@ constexpr typename Array<_Type>::reverse_iterator Array<_Type>::rbegin()noexcept
 template<typename _Type>
 constexpr typename Array<_Type>::reverse_iterator Array<_Type>::rend()noexcept{
     return reverse_iterator(this,-1);
+}
+template<typename _Type>
+constexpr typename Array<_Type>::const_reverse_iterator Array<_Type>::rbegin()const noexcept{
+    return this->crbegin();
+}
+template<typename _Type>
+constexpr typename Array<_Type>::const_reverse_iterator Array<_Type>::rend()const noexcept{
+    return this->crend();
 }
 template<typename _Type>
 constexpr typename Array<_Type>::const_reverse_iterator Array<_Type>::crbegin()const noexcept{
@@ -436,6 +469,35 @@ constexpr void Array<_Type>::auto_expand_capacity()noexcept{
         return;
     }
     this->reserve_capacity(this->capacity_*2);
+}
+template<typename _Type>
+template<typename _Func>
+constexpr Array<_Type> Array<_Type>::map(_Func&& func)const noexcept{
+    Array<_Type> ret;
+    for(auto const& element:(*this)){
+        ret.push_back(std::forward<_Func>(func)(element));
+    }
+    return ret;
+}
+template<typename _Type>
+template<typename _Func>
+constexpr _Type Array<_Type>::reduce(_Func&& func)const noexcept{
+    _Type ret{};
+    for(auto const& element:(*this)){
+        ret=std::forward<_Func>(func)(ret,element);
+    }
+    return ret;
+}
+template<typename _Type>
+template<typename _Func>
+constexpr Array<_Type> Array<_Type>::filter(_Func&& func)const noexcept{
+    Array<_Type> ret;
+    for(auto const& element:(*this)){
+        if(std::forward<_Func>(func)){
+            ret.push_back(element);
+        }
+    }
+    return ret;
 }
 template<typename _Type,typename OutputStream>
 constexpr OutputStream& operator<<(OutputStream& os,Array<_Type>const& array)noexcept{
