@@ -297,7 +297,7 @@ constexpr bool Array<_Type>::erase(size_t index,size_t count)noexcept{
         return false;
     }
     size_t real_count=count>(this->size_-index)?(this->size_-index):count;
-    for(size_t n=0;n<count;++n){
+    for(size_t n=0;n<real_count;++n){
         ((this->data_[index+n]).pointer_)->~_Type();
         Array<_Type>::memory_dealloc((this->data_[index+n]).pointer_);
     }
@@ -329,13 +329,16 @@ constexpr bool Array<_Type>::set_element(size_t index,_Type const& value)noexcep
         return false;
     }
     if(index==this->size_){
-        return this->insert(index,value);
+        return this->insert(this->size_,value);
     }
     *((this->data_[index]).pointer_)=value;
     return true;
 }
 template<typename _Type>
 constexpr _Type& Array<_Type>::operator[](size_t index)noexcept{
+    if(index==this->size_){
+        this->push_back({});
+    }
     return *((this->data_[index]).pointer_);
 }
 template<typename _Type>
@@ -356,7 +359,7 @@ constexpr void Array<_Type>::reserve_capacity(size_t capacity)noexcept{
 template<typename _Type>
 constexpr void Array<_Type>::shrink_to_fit()noexcept{
     if(this->capacity_>this->size_){
-        this->data_=static_cast<Element*>(Array<_Type>::memory_realloc(this->data_,capacity*sizeof(Element)));
+        this->data_=static_cast<Element*>(Array<_Type>::memory_realloc(this->data_,this->capacity_*sizeof(Element)));
         this->capacity_=this->size_;
     }
 }
@@ -431,8 +434,8 @@ constexpr Array<_Type> Array<_Type>::sub_array(size_t index,size_t count)const n
     }
     size_t ret_size=(index+count)>this->size_?(this->size_-index):count;
     ret.reserve_capacity(ret_size);
-    for(size_t i=index;index<ret_size;++index){
-        ret.push_back((*this)[index]);
+    for(size_t offset=0;offset<ret_size;++offset){
+        ret.push_back((*this)[index+offset]);
     }
     return ret;
 }
