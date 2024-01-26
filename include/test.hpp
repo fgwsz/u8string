@@ -1,24 +1,24 @@
 #ifndef __TEST_HPP__
 #define __TEST_HPP__
-#include<string>
-#include<string_view>
-#include<iostream>
-#include<vector>
-#include<functional>
-#include<stdexcept>
-#include<chrono>
+#include<string> // std::string std::to_string()
+#include<string_view> // std::string_view
+#include<iostream> // std::cout
+#include<vector> // std::vector
+#include<functional> // std::function
+#include<stdexcept> // std::runtime_error std::exception
+#include<chrono> // std::chrono::high_resolution_clock std::chrono::duration
 class __Test{
 public:
     static bool add(
-        std::string_view const& test_name,
-        std::function<void()>const& test_func
-    );
-    static void run();
-    static void throw_error(std::runtime_error const& error);
+        std::string_view const& test_unit_name,
+        std::function<void()>const& test_unit_func
+    )noexcept;
+    static void run()noexcept;
+    static void throw_error(std::runtime_error const& error)noexcept;
 private:
-    static std::vector<std::function<void()>> test_funcs;
-    static std::vector<std::string_view> test_names;
-    static std::vector<std::runtime_error> test_errors;
+    static std::vector<std::function<void()>> test_unit_funcs;
+    static std::vector<std::string_view> test_unit_names;
+    static std::vector<std::runtime_error> test_unit_errors;
     static size_t test_unit_count;
     static size_t test_unit_pass_count;
     static size_t test_unit_fail_count;
@@ -27,9 +27,9 @@ public:
     static size_t test_unit_case_pass_count;
     static size_t test_unit_case_fail_count;
 };
-std::vector<std::function<void()>> __Test::test_funcs={};
-std::vector<std::string_view> __Test::test_names={};
-std::vector<std::runtime_error> __Test::test_errors={};
+std::vector<std::function<void()>> __Test::test_unit_funcs={};
+std::vector<std::string_view> __Test::test_unit_names={};
+std::vector<std::runtime_error> __Test::test_unit_errors={};
 size_t __Test::test_unit_count=0;
 size_t __Test::test_unit_pass_count=0;
 size_t __Test::test_unit_fail_count=0;
@@ -37,16 +37,16 @@ size_t __Test::test_unit_case_count=0;
 size_t __Test::test_unit_case_pass_count=0;
 size_t __Test::test_unit_case_fail_count=0;
 bool __Test::add(
-    std::string_view const& test_name,
-    std::function<void()>const& test_func
-){
-    __Test::test_names.push_back(test_name);
-    __Test::test_funcs.push_back(test_func);
+    std::string_view const& test_unit_name,
+    std::function<void()>const& test_unit_func
+)noexcept{
+    __Test::test_unit_names.push_back(test_unit_name);
+    __Test::test_unit_funcs.push_back(test_unit_func);
     ++__Test::test_unit_count;
     return true;
 }
-void __Test::run(){
-    size_t size=__Test::test_funcs.size();
+void __Test::run()noexcept{
+    size_t size=__Test::test_unit_funcs.size();
     std::chrono::high_resolution_clock::time_point start_time{},end_time{};
     double duration=0;
     ::std::string exception_string{};
@@ -58,7 +58,7 @@ void __Test::run(){
         __Test::test_unit_case_fail_count=0;
         start_time=std::chrono::high_resolution_clock::now();
         try{
-            __Test::test_funcs[index]();
+            __Test::test_unit_funcs[index]();
         }catch(std::exception const& exception){
             exception_string=exception.what();
         }catch(std::string const& str){
@@ -74,8 +74,8 @@ void __Test::run(){
         duration=std::chrono::duration_cast<std::chrono::duration<double>>(
                 end_time - start_time
             ).count()*1000; // ms
-        test_unit_is_pass=exception_string.empty()&&__Test::test_errors.empty();
-        std::cout<<"[TEST] "<<__Test::test_names[index]
+        test_unit_is_pass=exception_string.empty()&&__Test::test_unit_errors.empty();
+        std::cout<<"[TEST] "<<__Test::test_unit_names[index]
             <<" ["<<(test_unit_is_pass?"PASS":"FAIL")<<"] ("<<duration<<" ms)\n";
         std::cout<<"case:"<<__Test::test_unit_case_count<<","
             <<"pass:"<<__Test::test_unit_case_pass_count<<","
@@ -83,17 +83,17 @@ void __Test::run(){
             <<"jump:"<<__Test::test_unit_case_count-(
                 __Test::test_unit_case_pass_count+__Test::test_unit_case_fail_count
             )<<".\n";
-        for(size_t index=0;auto const& error:__Test::test_errors){
+        for(size_t index=0;auto const& error:__Test::test_unit_errors){
             std::cout<<" + <fail> "<<index<<"\n";
             std::cout<<error.what()<<"\n";
             ++index;
         }
         if(!exception_string.empty()){
-            std::cout<<" + <fail> "<<__Test::test_errors.size()<<"\n"
+            std::cout<<" + <fail> "<<__Test::test_unit_errors.size()<<"\n"
                 <<"\t<exce> "<<exception_string<<"\n";
         }
         exception_string.clear();
-        __Test::test_errors.clear();
+        __Test::test_unit_errors.clear();
         if(test_unit_is_pass){
             ++__Test::test_unit_pass_count;
         }else{
@@ -105,8 +105,8 @@ void __Test::run(){
         <<"pass:"<<__Test::test_unit_pass_count<<","
         <<"fail:"<<__Test::test_unit_fail_count<<".\n";
 }
-void __Test::throw_error(std::runtime_error const& error){
-    __Test::test_errors.push_back(error);
+void __Test::throw_error(std::runtime_error const& error)noexcept{
+    __Test::test_unit_errors.push_back(error);
 }
 #define __TEST_ADD(__FUNC_NAME__) \
     static bool __test_flag_##__FUNC_NAME__= \

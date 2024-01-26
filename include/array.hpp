@@ -18,7 +18,8 @@ public:
     constexpr Array(Array<_Type>&& array)noexcept;
     template<size_t _size>
     constexpr Array(_Type const(&array)[_size])noexcept;
-    constexpr Array(::std::initializer_list<_Type> const& list)noexcept;
+    constexpr Array(std::initializer_list<_Type> const& list)noexcept;
+    constexpr Array(size_t count,_Type const& value={})noexcept;
 
     constexpr ~Array()noexcept;
 
@@ -26,7 +27,7 @@ public:
     constexpr Array<_Type>& operator=(Array<_Type>&& array)noexcept;
     template<size_t _size>
     constexpr Array<_Type>& operator=(_Type const(&array)[_size])noexcept;
-    constexpr Array<_Type>& operator=(::std::initializer_list<_Type> const& list)noexcept;
+    constexpr Array<_Type>& operator=(std::initializer_list<_Type> const& list)noexcept;
 
     constexpr bool insert(size_t index,_Type const& value)noexcept;
     constexpr bool insert(size_t index,_Type const& value,size_t count)noexcept;
@@ -46,6 +47,7 @@ public:
     constexpr size_t capacity()const noexcept;
     constexpr void reserve_capacity(size_t capacity)noexcept;
     constexpr void shrink_to_fit()noexcept;
+    constexpr size_t default_capacity()const noexcept;
 
     constexpr size_t size()const noexcept;
     constexpr size_t max_size()const noexcept;
@@ -58,7 +60,7 @@ public:
     constexpr Array<_Type>& operator+=(Array<_Type> const& array)noexcept;
     constexpr Array<_Type> operator+(Array<_Type> const& array)const noexcept;
 
-    constexpr Array<_Type> subarr(size_t index,size_t count)const noexcept;
+    constexpr Array<_Type> sub_array(size_t index,size_t count)const noexcept;
 
     template<typename OutputStream>
     constexpr OutputStream& debug_print(OutputStream& os)const noexcept;
@@ -111,6 +113,8 @@ public:
     // _Func:(const_reverse_iterator iter)->ret no use
     template<typename _Func>
     constexpr Array<_Type>& foreach_reverse_iterator(_Func&& func)const noexcept;
+
+    using value_type=_Type;
 private:
     struct Element{
         _Type* pointer_;
@@ -120,13 +124,18 @@ private:
     size_t size_;
     static constexpr size_t const default_capacity_=10;
     constexpr void auto_expand_capacity()noexcept;
+    static constexpr void* memory_alloc(size_t size)noexcept;
+    static constexpr void* memory_realloc(void* pointer,size_t size)noexcept;
+    static constexpr void memory_dealloc(void* pointer)noexcept;
+    template<typename _U>
+    static constexpr void swap(_U& lhs,_U& rhs)noexcept;
 }; // class Array
 template<typename _Type,typename OutputStream>
 constexpr OutputStream& operator<<(OutputStream& os,Array<_Type>const& array)noexcept;
 
 template<typename _Type>
 constexpr Array<_Type>::Array()noexcept{
-    this->data_=static_cast<Element*>(::malloc(sizeof(Element)*Array::default_capacity_));
+    this->data_=static_cast<Element*>(Array<_Type>::memory_alloc(sizeof(Element)*Array::default_capacity_));
     this->capacity_=Array::default_capacity_;
     this->size_=0;
 }
@@ -138,10 +147,10 @@ constexpr Array<_Type>::Array(Array<_Type> const& array)noexcept
 template<typename _Type>
 constexpr Array<_Type>::Array(Array<_Type>&& array)noexcept
     :Array(){
-    (*this)=::std::move(array);
+    (*this)=std::move(array);
 }
 template<typename _Type>
-constexpr Array<_Type>::Array(::std::initializer_list<_Type> const& list)noexcept
+constexpr Array<_Type>::Array(std::initializer_list<_Type> const& list)noexcept
     :Array<_Type>(){
     (*this)=list;
 }
@@ -152,10 +161,17 @@ constexpr Array<_Type>::Array(_Type const(&array)[_size])noexcept
     (*this)=array;
 }
 template<typename _Type>
+constexpr Array<_Type>::Array(size_t count,_Type const& value)noexcept
+    :Array<_Type>(){
+    this->resize(count,value);
+}
+template<typename _Type>
 constexpr Array<_Type>::~Array()noexcept{
-    if(this->data_){
+    if(this->data_!=nullptr){
         this->clear();
-        ::free(this->data_);
+        Array<_Type>::memory_dealloc(this->data_);
+        this->data_=nullptr;
+        this->capacity_=0;
     }
 }
 template<typename _Type>
@@ -175,7 +191,7 @@ constexpr Array<_Type>& Array<_Type>::operator=(Array<_Type>&& array)noexcept{
     if(this!=&array){
         if(this->data_){
             this->clear();
-            ::free(this->data_);
+            Array<_Type>::memory_dealloc(this->data_);
         }
         this->data_=array.data_;
         this->size_=array.size_;
@@ -185,9 +201,12 @@ constexpr Array<_Type>& Array<_Type>::operator=(Array<_Type>&& array)noexcept{
     return *this;
 }
 template<typename _Type>
-constexpr Array<_Type>& Array<_Type>::operator=(::std::initializer_list<_Type> const& list)noexcept{
+constexpr Array<_Type>& Array<_Type>::operator=(std::initializer_list<_Type> const& list)noexcept{
     if(this->size_>list.size()){
         this->resize(list.size());
+    }
+    if(this->capacity_<list.size()){
+        this->reserve_capacity(list.size());
     }
     for(size_t index=0;index<list.size();++index){
         this->set_element(index,*(list.begin()+index));
@@ -199,6 +218,9 @@ template<size_t _size>
 constexpr Array<_Type>& Array<_Type>::operator=(_Type const(&array)[_size])noexcept{
     if(this->size_>_size){
         this->resize(_size);
+    }
+    if(this->capacity_<_size){
+        this->reserve_capacity(_size);
     }
     for(size_t index=0;index<_size;++index){
         this->set_element(index,array[index]);
@@ -212,7 +234,7 @@ constexpr bool Array<_Type>::insert(size_t index,_Type const& value)noexcept{
     }
     this->auto_expand_capacity();
     ::memmove(this->data_+index+1,this->data_+index,(this->size_-index)*sizeof(Element));
-    (this->data_[index]).pointer_=static_cast<_Type*>(::malloc(sizeof(_Type)));
+    (this->data_[index]).pointer_=static_cast<_Type*>(Array<_Type>::memory_alloc(sizeof(_Type)));
     new((this->data_[index]).pointer_)_Type(value);
     ++(this->size_);
     return true;
@@ -225,7 +247,7 @@ constexpr bool Array<_Type>::insert(size_t index,_Type const& value,size_t count
     this->reserve_capacity(this->size_+count);
     ::memmove(this->data_+index+count,this->data_+index,(this->size_-index)*sizeof(Element));
     for(size_t n=0;n<count;++n){
-        (this->data_[index+n]).pointer_=static_cast<_Type*>(::malloc(sizeof(_Type)));
+        (this->data_[index+n]).pointer_=static_cast<_Type*>(Array<_Type>::memory_alloc(sizeof(_Type)));
         new((this->data_[index+n]).pointer_)_Type(value);
     }
     this->size_+=count;
@@ -240,14 +262,14 @@ constexpr bool Array<_Type>::insert(size_t index,Array<_Type> const& array)noexc
     if(this!=&array){
         ::memmove(this->data_+index+array.size_,this->data_+index,(this->size_-index)*sizeof(Element));
         for(size_t n=0;n<array.size_;++n){
-            (this->data_[index+n]).pointer_=static_cast<_Type*>(::malloc(sizeof(_Type)));
+            (this->data_[index+n]).pointer_=static_cast<_Type*>(Array<_Type>::memory_alloc(sizeof(_Type)));
             new((this->data_[index+n]).pointer_)_Type(array[n]);
         }
     }else{
         Array<_Type>array_value=array;
         ::memmove(this->data_+index+array_value.size_,this->data_+index,(this->size_-index)*sizeof(Element));
         for(size_t n=0;n<array_value.size_;++n){
-            (this->data_[index+n]).pointer_=static_cast<_Type*>(::malloc(sizeof(_Type)));
+            (this->data_[index+n]).pointer_=static_cast<_Type*>(Array<_Type>::memory_alloc(sizeof(_Type)));
             new((this->data_[index+n]).pointer_)_Type(array_value[n]);
         }
     }
@@ -264,7 +286,7 @@ constexpr bool Array<_Type>::erase(size_t index)noexcept{
         return false;
     }
     ((this->data_[index]).pointer_)->~_Type();
-    ::free((this->data_[index]).pointer_);
+    Array<_Type>::memory_dealloc((this->data_[index]).pointer_);
     ::memmove(this->data_+index,this->data_+index+1,(this->size_-index-1)*sizeof(Element));
     --(this->size_);
     return true;
@@ -277,7 +299,7 @@ constexpr bool Array<_Type>::erase(size_t index,size_t count)noexcept{
     size_t real_count=count>(this->size_-index)?(this->size_-index):count;
     for(size_t n=0;n<count;++n){
         ((this->data_[index+n]).pointer_)->~_Type();
-        ::free((this->data_[index+n]).pointer_);
+        Array<_Type>::memory_dealloc((this->data_[index+n]).pointer_);
     }
     ::memmove(this->data_+index,this->data_+index+real_count,(this->size_-index-real_count)*sizeof(Element));
     this->size_-=real_count;
@@ -327,16 +349,20 @@ constexpr size_t Array<_Type>::capacity()const noexcept{
 template<typename _Type>
 constexpr void Array<_Type>::reserve_capacity(size_t capacity)noexcept{
     if(capacity>this->capacity_){
-        this->data_=static_cast<Element*>(::realloc(this->data_,capacity*sizeof(Element)));
+        this->data_=static_cast<Element*>(Array<_Type>::memory_realloc(this->data_,capacity*sizeof(Element)));
         this->capacity_=capacity;
     }
 }
 template<typename _Type>
 constexpr void Array<_Type>::shrink_to_fit()noexcept{
     if(this->capacity_>this->size_){
-        this->data_=static_cast<Element*>(::realloc(this->data_,capacity*sizeof(Element)));
+        this->data_=static_cast<Element*>(Array<_Type>::memory_realloc(this->data_,capacity*sizeof(Element)));
         this->capacity_=this->size_;
     }
+}
+template<typename _Type>
+constexpr size_t Array<_Type>::default_capacity()const noexcept{
+    return this->default_capacity_;
 }
 template<typename _Type>
 constexpr bool Array<_Type>::empty()const noexcept{
@@ -363,15 +389,9 @@ constexpr void Array<_Type>::resize(size_t size,_Type const& value)noexcept{
 template<typename _Type>
 constexpr void Array<_Type>::swap(Array<_Type>& array)noexcept{
     if(this!=&array){
-        Element* temp_data=this->data_;
-        size_t temp_size=this->size_;
-        size_t temp_capacity=this->capacity_;
-        this->data_=array.data_;
-        this->size_=array.size_;
-        this->capacity_=array.capacity_;
-        array.data_=temp_data;
-        array.size_=temp_size;
-        array.capacity_=temp_capacity;
+        Array<_Type>::swap(this->data_,array.data_);
+        Array<_Type>::swap(this->size_,array.size_);
+        Array<_Type>::swap(this->capacity_,array.capacity_);
     }
 }
 template<typename _Type>
@@ -404,7 +424,7 @@ constexpr Array<_Type> Array<_Type>::operator+(Array<_Type> const& array)const n
     return ret+=array;
 }
 template<typename _Type>
-constexpr Array<_Type> Array<_Type>::subarr(size_t index,size_t count)const noexcept{
+constexpr Array<_Type> Array<_Type>::sub_array(size_t index,size_t count)const noexcept{
     Array<_Type> ret;
     if(this->empty()||count==0||index>=this->size_){
         return ret;
@@ -440,7 +460,8 @@ constexpr typename Array<_Type>::iterator Array<_Type>::begin()noexcept{
 }
 template<typename _Type>
 constexpr typename Array<_Type>::iterator Array<_Type>::end()noexcept{
-    return iterator(this,this->size_);
+    return iterator(this,
+        static_cast<typename Array<_Type>::const_iterator::index_t>(this->size_));
 }
 template<typename _Type>
 constexpr typename Array<_Type>::const_iterator Array<_Type>::begin()const noexcept{
@@ -487,6 +508,10 @@ constexpr typename Array<_Type>::const_reverse_iterator Array<_Type>::crend()con
 }
 template<typename _Type>
 constexpr void Array<_Type>::auto_expand_capacity()noexcept{
+    if(this->capacity_==0){
+        this->reserve_capacity(this->default_capacity_);
+        return;
+    }
     if(this->size_<this->capacity_){
         return;
     }
@@ -575,4 +600,37 @@ constexpr Array<_Type>& Array<_Type>::foreach_reverse_iterator(_Func&& func)cons
         std::forward<_Func>(func)(iter);
     }
     return *this;
+}
+template<typename _Type>
+constexpr void* Array<_Type>::memory_alloc(size_t size)noexcept{
+    void* ret=nullptr;
+    while(ret==nullptr){
+        ret=::malloc(size);
+        if(ret==nullptr){
+            ::free(ret);
+            ret=nullptr;
+        }else{
+            break;
+        }
+    }
+    return ret;
+}
+template<typename _Type>
+constexpr void* Array<_Type>::memory_realloc(void* pointer,size_t size)noexcept{
+    void* ret=nullptr;
+    while(ret==nullptr){
+        ret=::realloc(pointer,size);
+    }
+    return ret;
+}
+template<typename _Type>
+constexpr void Array<_Type>::memory_dealloc(void* pointer)noexcept{
+    ::free(pointer);
+}
+template<typename _Type>
+template<typename _U>
+constexpr void Array<_Type>::swap(_U& lhs,_U& rhs)noexcept{
+    _U temp=lhs;
+    lhs=rhs;
+    rhs=temp;
 }
