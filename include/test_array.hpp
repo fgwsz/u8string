@@ -5,7 +5,7 @@
 // TEST API:
 // [o] constexpr Array()noexcept;
 // [o] constexpr Array(Array<_Type> const& array)noexcept;
-// [x] constexpr Array(Array<_Type>&& array)noexcept;
+// [o] constexpr Array(Array<_Type>&& array)noexcept;
 // [o] template<size_t _size>
 //     constexpr Array(_Type const(&array)[_size])noexcept;
 // [o] constexpr Array(::std::initializer_list<_Type> const& list)noexcept;
