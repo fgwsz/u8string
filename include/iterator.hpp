@@ -5,6 +5,7 @@ extern "C"{
 #include<stdint.h> // intmax_t
 }
 #include<type_traits> // std::is_const
+#include<cstddef> // std::nullptr_t
 // _Type : T->Iter / T const->ConstIter
 // _is_reverse : false->Iter / true->ReverseIter
 template<typename _Container,typename _Type,bool _is_reverse=false>
@@ -31,6 +32,14 @@ public:
     constexpr ptrdiff_t operator-(iterator iter)const noexcept;
     constexpr iterator& operator+=(ptrdiff_t offset)noexcept;
     constexpr iterator& operator-=(ptrdiff_t offset)noexcept;
+    constexpr bool operator==(iterator const& rhs)const noexcept;
+    constexpr bool operator!=(iterator const& rhs)const noexcept;
+    constexpr bool operator< (iterator const& rhs)const noexcept;
+    constexpr bool operator<=(iterator const& rhs)const noexcept;
+    constexpr bool operator> (iterator const& rhs)const noexcept;
+    constexpr bool operator>=(iterator const& rhs)const noexcept;
+    constexpr bool operator==(std::nullptr_t const& rhs)const noexcept;
+    constexpr bool operator!=(std::nullptr_t const& rhs)const noexcept;
     constexpr container_t* container()const noexcept;
     constexpr index_t index()const noexcept;
     constexpr bool is_const_iterator()const noexcept;
@@ -115,12 +124,64 @@ Iterator<_Container,_Type,_is_reverse>::operator+=(ptrdiff_t offset)noexcept{
 template<typename _Container,typename _Type,bool _is_reverse>
 constexpr typename Iterator<_Container,_Type,_is_reverse>::iterator&
 Iterator<_Container,_Type,_is_reverse>::operator-=(ptrdiff_t offset)noexcept{
-    this->index_-=static_cast<index_t>(
-        _is_reverse
-        ?-offset
-        :offset
-    );
-    return *this;
+    return this->operator+=(-offset);
+}
+template<typename _Container,typename _Type,bool _is_reverse>
+constexpr bool
+Iterator<_Container,_Type,_is_reverse>::operator==(iterator const& rhs)const noexcept{
+    return this->container_==rhs.container_&&
+        this->index_==rhs.index_;
+}
+template<typename _Container,typename _Type,bool _is_reverse>
+constexpr bool
+Iterator<_Container,_Type,_is_reverse>::operator!=(iterator const& rhs)const noexcept{
+    return !((*this)==rhs);
+}
+template<typename _Container,typename _Type,bool _is_reverse>
+constexpr bool
+Iterator<_Container,_Type,_is_reverse>::operator==(std::nullptr_t const& rhs)const noexcept{
+    return this->operator bool()==false;
+}
+template<typename _Container,typename _Type,bool _is_reverse>
+constexpr bool
+Iterator<_Container,_Type,_is_reverse>::operator!=(std::nullptr_t const& rhs)const noexcept{
+    return !((*this)==rhs);
+}
+template<typename _Container,typename _Type,bool _is_reverse>
+constexpr bool
+Iterator<_Container,_Type,_is_reverse>::operator<(iterator const& rhs)const noexcept{
+    if(this->container_!=rhs.container_){
+        return false;
+    }
+    if(!_is_reverse){
+        return this->index_<rhs.index_;
+    }else{
+        return this->index_>rhs.index_;
+    }
+}
+template<typename _Container,typename _Type,bool _is_reverse>
+constexpr bool
+Iterator<_Container,_Type,_is_reverse>::operator<=(iterator const& rhs)const noexcept{
+    if(this->container_!=rhs.container_){
+        return false;
+    }
+    return !((*this)>rhs);
+}
+template<typename _Container,typename _Type,bool _is_reverse>
+constexpr bool
+Iterator<_Container,_Type,_is_reverse>::operator>(iterator const& rhs)const noexcept{
+    if(this->container_!=rhs.container_){
+        return false;
+    }
+    return rhs<(*this);
+}
+template<typename _Container,typename _Type,bool _is_reverse>
+constexpr bool
+Iterator<_Container,_Type,_is_reverse>::operator>=(iterator const& rhs)const noexcept{
+    if(this->container_!=rhs.container_){
+        return false;
+    }
+    return !((*this)<rhs);
 }
 template<typename _Container,typename _Type,bool _is_reverse>
 constexpr typename Iterator<_Container,_Type,_is_reverse>::container_t*
