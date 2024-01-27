@@ -109,7 +109,11 @@ Iterator<_Container,_Type,_is_reverse>::operator-(ptrdiff_t offset)const noexcep
 template<typename _Container,typename _Type,bool _is_reverse>
 constexpr ptrdiff_t
 Iterator<_Container,_Type,_is_reverse>::operator-(iterator iter)const noexcept{
-    return static_cast<ptrdiff_t>(this->index_-iter.index_);
+    return static_cast<ptrdiff_t>(
+        _is_reverse
+        ?(-(this->index_-iter.index_))
+        :(this->index_-iter.index_)
+    );
 }
 template<typename _Container,typename _Type,bool _is_reverse>
 constexpr typename Iterator<_Container,_Type,_is_reverse>::iterator&
