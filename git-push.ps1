@@ -4,8 +4,8 @@ if($commit_info -eq "exit"){
     echo "git push exit!"
 }else{
     git add include/*
+    git add tests/*
     git add src/*
-    git add res/*
     git add CMakeLists.txt
     git add build*.ps1
     git add clean.ps1
