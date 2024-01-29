@@ -876,24 +876,69 @@ TEST_UNIT(test_array_sub_array){
     TEST_CASE(ret.capacity()>=0);
 }
 // [x] constexpr iterator begin()noexcept;
+TEST_UNIT(test_array_begin){
+
+}
 // [x] constexpr iterator end()noexcept;
+TEST_UNIT(test_array_end){
+
+}
 // [x] constexpr const_iterator begin()const noexcept;
+TEST_UNIT(test_array_const_begin){
+
+}
 // [x] constexpr const_iterator end()const noexcept;
+TEST_UNIT(test_array_const_end){
+
+}
 // [x] constexpr const_iterator cbegin()const noexcept;
+TEST_UNIT(test_array_cbegin){
+
+}
 // [x] constexpr const_iterator cend()const noexcept;
+TEST_UNIT(test_array_cend){
+
+}
 // [x] constexpr reverse_iterator rbegin()noexcept;
+TEST_UNIT(test_array_rbegin){
+
+}
 // [x] constexpr reverse_iterator rend()noexcept;
+TEST_UNIT(test_array_rend){
+
+}
 // [x] constexpr const_reverse_iterator rbegin()const noexcept;
+TEST_UNIT(test_array_const_rbegin){
+
+}
 // [x] constexpr const_reverse_iterator rend()const noexcept;
+TEST_UNIT(test_array_const_rend){
+
+}
 // [x] constexpr const_reverse_iterator crbegin()const noexcept;
+TEST_UNIT(test_array_crbegin){
+
+}
 // [x] constexpr const_reverse_iterator crend()const noexcept;
+TEST_UNIT(test_array_crend){
+
+}
 // [x] template<typename _Func>
 //     constexpr auto map(_Func&& func)const noexcept
 //         ->Array<std::remove_cvref_t<decltype(std::forward<_Func>(func)(_Type{}))>>;
+TEST_UNIT(test_array_map){
+
+}
 // [x] template<typename _Func>
 //     constexpr _Type reduce(_Func&& func)const noexcept;
+TEST_UNIT(test_array_reduce){
+
+}
 // [x] template<typename _Func,typename _Ret=_Type>
 //     constexpr _Ret reduce(_Func&& func,_Ret&& init)const noexcept;
+TEST_UNIT(test_array_reduce_with_init){
+
+}
 // [x] template<typename _Func>
 //     constexpr Array<_Type> filter(_Func&& func)const noexcept;
 // [x] template<typename _Func>

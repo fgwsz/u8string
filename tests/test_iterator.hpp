@@ -20,16 +20,16 @@
 // [o] consteopr iterator& operator-=(ptrdiff_t offset)noeocept;
 // [o] consteopr bool operator==(iterator const& rhs)const noeocept;
 // [o] consteopr bool operator!=(iterator const& rhs)const noeocept;
-// [x] constexpr bool operator< (iterator const& rhs)const noexcept;
-// [x] constexpr bool operator<=(iterator const& rhs)const noexcept;
-// [x] constexpr bool operator> (iterator const& rhs)const noexcept;
-// [x] constexpr bool operator>=(iterator const& rhs)const noexcept;
-// [x] constexpr bool operator==(std::nullptr_t const& rhs)const noexcept;
-// [x] constexpr bool operator!=(std::nullptr_t const& rhs)const noexcept;
-// [x] constexpr container_t* container()const noexcept;
-// [x] constexpr index_t index()const noexcept;
-// [x] constexpr bool is_const_iterator()const noexcept;
-// [x] constexpr bool is_reverse_iterator()const noexcept;
+// [o] consteopr bool operator< (iterator const& rhs)const noeocept;
+// [o] consteopr bool operator<=(iterator const& rhs)const noeocept;
+// [o] consteopr bool operator> (iterator const& rhs)const noeocept;
+// [o] consteopr bool operator>=(iterator const& rhs)const noeocept;
+// [o] consteopr bool operator==(std::nullptr_t const& rhs)const noeocept;
+// [o] consteopr bool operator!=(std::nullptr_t const& rhs)const noeocept;
+// [o] consteopr container_t* container()const noeocept;
+// [o] consteopr indeo_t indeo()const noeocept;
+// [o] consteopr bool is_const_iterator()const noeocept;
+// [o] consteopr bool is_reverse_iterator()const noeocept;
 
 // [o] constexpr Iterator(container_t* container=nullptr,index_t index=0)noexcept;
 TEST_UNIT(test_iterator_ctor_by_container_and_index){
@@ -328,44 +328,464 @@ TEST_UNIT(test_iterator_operator_not_eq_by_iterator){
     reverse_iterator_t reverse_iter_rhs_3(&container,0);
     TEST_CASE(reverse_iter_lhs_3!=reverse_iter_rhs_3);
 }
-// [x] constexpr bool operator< (iterator const& rhs)const noexcept;
+// [o] constexpr bool operator< (iterator const& rhs)const noexcept;
 TEST_UNIT(test_iterator_operator_less){
+    using element_t=double;
+    using container_t=std::vector<element_t>;
+    using iterator_t=Iterator<container_t,element_t>;
+    using reverse_iterator_t=Iterator<container_t,element_t,true>;
 
+    container_t container{0,1,2,3,4,5,6,7,8,9,10};
+
+    iterator_t iter_lhs(nullptr,0);
+    iterator_t iter_rhs(nullptr,0);
+    TEST_CASE((iter_lhs<iter_rhs)==false);
+
+    iter_lhs=iterator_t(nullptr,0);
+    iter_rhs=iterator_t(nullptr,10);
+    TEST_CASE((iter_lhs<iter_rhs)==true);
+
+    iter_lhs=iterator_t(nullptr,10);
+    iter_rhs=iterator_t(nullptr,0);
+    TEST_CASE((iter_lhs<iter_rhs)==false);
+
+    iter_lhs=iterator_t(nullptr,0);
+    iter_rhs=iterator_t(&container,0);
+    TEST_CASE((iter_lhs<iter_rhs)==false);
+
+    iter_lhs=iterator_t(&container,0);
+    iter_rhs=iterator_t(nullptr,0);
+    TEST_CASE((iter_lhs<iter_rhs)==false);
+
+    iter_lhs=iterator_t(&container,0);
+    iter_rhs=iterator_t(&container,0);
+    TEST_CASE((iter_lhs<iter_rhs)==false);
+
+    iter_lhs=iterator_t(&container,10);
+    iter_rhs=iterator_t(&container,0);
+    TEST_CASE((iter_lhs<iter_rhs)==false);
+
+    iter_lhs=iterator_t(&container,0);
+    iter_rhs=iterator_t(&container,10);
+    TEST_CASE((iter_lhs<iter_rhs)==true);
+
+    reverse_iterator_t reverse_iter_lhs(nullptr,0);
+    reverse_iterator_t reverse_iter_rhs(nullptr,0);
+    TEST_CASE((reverse_iter_lhs<reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(nullptr,0);
+    reverse_iter_rhs=reverse_iterator_t(&container,0);
+    TEST_CASE((reverse_iter_lhs<reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(nullptr,0);
+    reverse_iter_rhs=reverse_iterator_t(nullptr,10);
+    TEST_CASE((reverse_iter_lhs<reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(nullptr,10);
+    reverse_iter_rhs=reverse_iterator_t(nullptr,0);
+    TEST_CASE((reverse_iter_lhs<reverse_iter_rhs)==true);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,0);
+    reverse_iter_rhs=reverse_iterator_t(nullptr,0);
+    TEST_CASE((reverse_iter_lhs<reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,0);
+    reverse_iter_rhs=reverse_iterator_t(&container,0);
+    TEST_CASE((reverse_iter_lhs<reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,0);
+    reverse_iter_rhs=reverse_iterator_t(&container,10);
+    TEST_CASE((reverse_iter_lhs<reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,10);
+    reverse_iter_rhs=reverse_iterator_t(&container,0);
+    TEST_CASE((reverse_iter_lhs<reverse_iter_rhs)==true);
 }
-// [x] constexpr bool operator<=(iterator const& rhs)const noexcept;
+// [o] constexpr bool operator<=(iterator const& rhs)const noexcept;
 TEST_UNIT(test_iterator_operator_less_than){
+    using element_t=double;
+    using container_t=std::vector<element_t>;
+    using iterator_t=Iterator<container_t,element_t>;
+    using reverse_iterator_t=Iterator<container_t,element_t,true>;
 
+    container_t container{0,1,2,3,4,5,6,7,8,9,10};
+
+    iterator_t iter_lhs(nullptr,0);
+    iterator_t iter_rhs(nullptr,0);
+    TEST_CASE((iter_lhs<=iter_rhs)==true);
+
+    iter_lhs=iterator_t(nullptr,0);
+    iter_rhs=iterator_t(nullptr,10);
+    TEST_CASE((iter_lhs<=iter_rhs)==true);
+
+    iter_lhs=iterator_t(nullptr,10);
+    iter_rhs=iterator_t(nullptr,0);
+    TEST_CASE((iter_lhs<=iter_rhs)==false);
+
+    iter_lhs=iterator_t(nullptr,0);
+    iter_rhs=iterator_t(&container,0);
+    TEST_CASE((iter_lhs<=iter_rhs)==false);
+
+    iter_lhs=iterator_t(&container,0);
+    iter_rhs=iterator_t(nullptr,0);
+    TEST_CASE((iter_lhs<=iter_rhs)==false);
+
+    iter_lhs=iterator_t(&container,0);
+    iter_rhs=iterator_t(&container,0);
+    TEST_CASE((iter_lhs<=iter_rhs)==true);
+
+    iter_lhs=iterator_t(&container,10);
+    iter_rhs=iterator_t(&container,0);
+    TEST_CASE((iter_lhs<=iter_rhs)==false);
+
+    iter_lhs=iterator_t(&container,0);
+    iter_rhs=iterator_t(&container,10);
+    TEST_CASE((iter_lhs<=iter_rhs)==true);
+
+    reverse_iterator_t reverse_iter_lhs(nullptr,0);
+    reverse_iterator_t reverse_iter_rhs(nullptr,0);
+    TEST_CASE((reverse_iter_lhs<=reverse_iter_rhs)==true);
+
+    reverse_iter_lhs=reverse_iterator_t(nullptr,0);
+    reverse_iter_rhs=reverse_iterator_t(nullptr,10);
+    TEST_CASE((reverse_iter_lhs<=reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(nullptr,10);
+    reverse_iter_rhs=reverse_iterator_t(nullptr,0);
+    TEST_CASE((reverse_iter_lhs<=reverse_iter_rhs)==true);
+
+    reverse_iter_lhs=reverse_iterator_t(nullptr,0);
+    reverse_iter_rhs=reverse_iterator_t(&container,0);
+    TEST_CASE((reverse_iter_lhs<=reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,0);
+    reverse_iter_rhs=reverse_iterator_t(nullptr,0);
+    TEST_CASE((reverse_iter_lhs<=reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,0);
+    reverse_iter_rhs=reverse_iterator_t(&container,0);
+    TEST_CASE((reverse_iter_lhs<=reverse_iter_rhs)==true);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,0);
+    reverse_iter_rhs=reverse_iterator_t(&container,10);
+    TEST_CASE((reverse_iter_lhs<=reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,10);
+    reverse_iter_rhs=reverse_iterator_t(&container,0);
+    TEST_CASE((reverse_iter_lhs<=reverse_iter_rhs)==true);
 }
-// [x] constexpr bool operator> (iterator const& rhs)const noexcept;
+// [o] constexpr bool operator> (iterator const& rhs)const noexcept;
 TEST_UNIT(test_iterator_operator_greater){
+    using element_t=double;
+    using container_t=std::vector<element_t>;
+    using iterator_t=Iterator<container_t,element_t>;
+    using reverse_iterator_t=Iterator<container_t,element_t,true>;
 
+    container_t container{0,1,2,3,4,5,6,7,8,9,10};
+
+    iterator_t iter_lhs(nullptr,0);
+    iterator_t iter_rhs(nullptr,0);
+    TEST_CASE((iter_lhs>iter_rhs)==false);
+
+    iter_lhs=iterator_t(nullptr,0);
+    iter_rhs=iterator_t(nullptr,10);
+    TEST_CASE((iter_lhs>iter_rhs)==false);
+
+    iter_lhs=iterator_t(nullptr,10);
+    iter_rhs=iterator_t(nullptr,0);
+    TEST_CASE((iter_lhs>iter_rhs)==true);
+
+    iter_lhs=iterator_t(nullptr,0);
+    iter_rhs=iterator_t(&container,0);
+    TEST_CASE((iter_lhs>iter_rhs)==false);
+
+    iter_lhs=iterator_t(&container,0);
+    iter_rhs=iterator_t(nullptr,0);
+    TEST_CASE((iter_lhs>iter_rhs)==false);
+
+    iter_lhs=iterator_t(&container,0);
+    iter_rhs=iterator_t(&container,0);
+    TEST_CASE((iter_lhs>iter_rhs)==false);
+
+    iter_lhs=iterator_t(&container,0);
+    iter_rhs=iterator_t(&container,10);
+    TEST_CASE((iter_lhs>iter_rhs)==false);
+
+    iter_lhs=iterator_t(&container,10);
+    iter_rhs=iterator_t(&container,0);
+    TEST_CASE((iter_lhs>iter_rhs)==true);
+
+    reverse_iterator_t reverse_iter_lhs(nullptr,0);
+    reverse_iterator_t reverse_iter_rhs(nullptr,0);
+    TEST_CASE((reverse_iter_lhs>reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(nullptr,0);
+    reverse_iter_rhs=reverse_iterator_t(nullptr,10);
+    TEST_CASE((reverse_iter_lhs>reverse_iter_rhs)==true);
+
+    reverse_iter_lhs=reverse_iterator_t(nullptr,10);
+    reverse_iter_rhs=reverse_iterator_t(nullptr,0);
+    TEST_CASE((reverse_iter_lhs>reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(nullptr,0);
+    reverse_iter_rhs=reverse_iterator_t(&container,0);
+    TEST_CASE((reverse_iter_lhs>reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,0);
+    reverse_iter_rhs=reverse_iterator_t(nullptr,0);
+    TEST_CASE((reverse_iter_lhs>reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,0);
+    reverse_iter_rhs=reverse_iterator_t(&container,0);
+    TEST_CASE((reverse_iter_lhs>reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,10);
+    reverse_iter_rhs=reverse_iterator_t(&container,0);
+    TEST_CASE((reverse_iter_lhs>reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,0);
+    reverse_iter_rhs=reverse_iterator_t(&container,10);
+    TEST_CASE((reverse_iter_lhs>reverse_iter_rhs)==true);
 }
-// [x] constexpr bool operator>=(iterator const& rhs)const noexcept;
+// [o] constexpr bool operator>=(iterator const& rhs)const noexcept;
 TEST_UNIT(test_iterator_operator_greater_than){
+    using element_t=double;
+    using container_t=std::vector<element_t>;
+    using iterator_t=Iterator<container_t,element_t>;
+    using reverse_iterator_t=Iterator<container_t,element_t,true>;
 
+    container_t container{0,1,2,3,4,5,6,7,8,9,10};
+
+    iterator_t iter_lhs(nullptr,0);
+    iterator_t iter_rhs(nullptr,0);
+    TEST_CASE((iter_lhs>=iter_rhs)==true);
+
+    iter_lhs=iterator_t(nullptr,0);
+    iter_rhs=iterator_t(nullptr,10);
+    TEST_CASE((iter_lhs>=iter_rhs)==false);
+
+    iter_lhs=iterator_t(nullptr,10);
+    iter_rhs=iterator_t(nullptr,0);
+    TEST_CASE((iter_lhs>=iter_rhs)==true);
+
+    iter_lhs=iterator_t(nullptr,0);
+    iter_rhs=iterator_t(&container,0);
+    TEST_CASE((iter_lhs>=iter_rhs)==false);
+
+    iter_lhs=iterator_t(&container,0);
+    iter_rhs=iterator_t(nullptr,0);
+    TEST_CASE((iter_lhs>=iter_rhs)==false);
+
+    iter_lhs=iterator_t(&container,0);
+    iter_rhs=iterator_t(&container,0);
+    TEST_CASE((iter_lhs>=iter_rhs)==true);
+
+    iter_lhs=iterator_t(&container,0);
+    iter_rhs=iterator_t(&container,10);
+    TEST_CASE((iter_lhs>=iter_rhs)==false);
+
+    iter_lhs=iterator_t(&container,10);
+    iter_rhs=iterator_t(&container,0);
+    TEST_CASE((iter_lhs>=iter_rhs)==true);
+
+    reverse_iterator_t reverse_iter_lhs(nullptr,0);
+    reverse_iterator_t reverse_iter_rhs(nullptr,0);
+    TEST_CASE((reverse_iter_lhs>=reverse_iter_rhs)==true);
+
+    reverse_iter_lhs=reverse_iterator_t(nullptr,0);
+    reverse_iter_rhs=reverse_iterator_t(nullptr,10);
+    TEST_CASE((reverse_iter_lhs>=reverse_iter_rhs)==true);
+
+    reverse_iter_lhs=reverse_iterator_t(nullptr,10);
+    reverse_iter_rhs=reverse_iterator_t(nullptr,0);
+    TEST_CASE((reverse_iter_lhs>=reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(nullptr,0);
+    reverse_iter_rhs=reverse_iterator_t(&container,0);
+    TEST_CASE((reverse_iter_lhs>=reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,0);
+    reverse_iter_rhs=reverse_iterator_t(nullptr,0);
+    TEST_CASE((reverse_iter_lhs>=reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,0);
+    reverse_iter_rhs=reverse_iterator_t(&container,0);
+    TEST_CASE((reverse_iter_lhs>=reverse_iter_rhs)==true);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,10);
+    reverse_iter_rhs=reverse_iterator_t(&container,0);
+    TEST_CASE((reverse_iter_lhs>=reverse_iter_rhs)==false);
+
+    reverse_iter_lhs=reverse_iterator_t(&container,0);
+    reverse_iter_rhs=reverse_iterator_t(&container,10);
+    TEST_CASE((reverse_iter_lhs>=reverse_iter_rhs)==true);
 }
-// [x] constexpr bool operator==(std::nullptr_t const& rhs)const noexcept;
+// [o] constexpr bool operator==(std::nullptr_t const& rhs)const noexcept;
 TEST_UNIT(test_iterator_operator_eq_by_nullptr){
+    using element_t=double;
+    using container_t=std::vector<element_t>;
+    using iterator_t=Iterator<container_t,element_t>;
+    container_t container{1,2,3};
 
+    iterator_t iter(&container,0);
+    TEST_CASE((iter==nullptr)==false);
+
+    iter=iterator_t(&container,3);
+    TEST_CASE((iter==nullptr)==true);
+
+    iter=iterator_t(nullptr,0);
+    TEST_CASE((iter==nullptr)==true);
+
+    iter=iterator_t(nullptr,100);
+    TEST_CASE((iter==nullptr)==true);
+
+    iter=iterator_t(&container,-1);
+    TEST_CASE((iter==nullptr)==true);
 }
-// [x] constexpr bool operator!=(std::nullptr_t const& rhs)const noexcept;
+// [o] constexpr bool operator!=(std::nullptr_t const& rhs)const noexcept;
 TEST_UNIT(test_iterator_operator_not_eq_by_nullptr){
+    using element_t=double;
+    using container_t=std::vector<element_t>;
+    using iterator_t=Iterator<container_t,element_t>;
+    container_t container{1,2,3};
 
+    iterator_t iter(&container,0);
+    TEST_CASE((iter!=nullptr)==true);
+
+    iter=iterator_t(&container,3);
+    TEST_CASE((iter!=nullptr)==false);
+
+    iter=iterator_t(nullptr,0);
+    TEST_CASE((iter!=nullptr)==false);
+
+    iter=iterator_t(nullptr,100);
+    TEST_CASE((iter!=nullptr)==false);
+
+    iter=iterator_t(&container,-1);
+    TEST_CASE((iter!=nullptr)==false);
 }
-// [x] constexpr container_t* container()const noexcept;
+// [o] constexpr container_t* container()const noexcept;
 TEST_UNIT(test_iterator_container){
+    using element_t=double;
+    using container_t=std::vector<element_t>;
+    using iterator_t=Iterator<container_t,element_t>;
+    using reverse_iterator_t=Iterator<container_t,element_t,true>;
 
+    container_t container{0,1,2,3,4,5,6,7,8,9,10};
+
+    iterator_t iter(nullptr,0);
+    TEST_CASE(iter.container()==nullptr);
+
+    iter=iterator_t(&container,0);
+    TEST_CASE(iter.container()==&container);
+
+    reverse_iterator_t reverse_iter(nullptr,0);
+    TEST_CASE(reverse_iter.container()==nullptr);
+
+    reverse_iter=reverse_iterator_t(&container,0);
+    TEST_CASE(reverse_iter.container()==&container);
 }
-// [x] constexpr index_t index()const noexcept;
+// [o] constexpr index_t index()const noexcept;
 TEST_UNIT(test_iterator_index){
+    using element_t=double;
+    using container_t=std::vector<element_t>;
+    using iterator_t=Iterator<container_t,element_t>;
+    using reverse_iterator_t=Iterator<container_t,element_t,true>;
 
+    container_t container{0,1,2,3,4,5,6,7,8,9,10};
+
+    iterator_t iter(nullptr,0);
+    TEST_CASE(iter.index()==0);
+
+    iter=iterator_t(&container,0);
+    TEST_CASE(iter.index()==0);
+
+    iter=iterator_t(&container,-1);
+    TEST_CASE(iter.index()==-1);
+
+    iter=iterator_t(&container,100);
+    TEST_CASE(iter.index()==100);
+
+    reverse_iterator_t reverse_iter(nullptr,0);
+    TEST_CASE(reverse_iter.index()==0);
+
+    reverse_iter=reverse_iterator_t(&container,0);
+    TEST_CASE(reverse_iter.index()==0);
+
+    reverse_iter=reverse_iterator_t(&container,-1);
+    TEST_CASE(reverse_iter.index()==-1);
+
+    reverse_iter=reverse_iterator_t(&container,100);
+    TEST_CASE(reverse_iter.index()==100);
 }
-// [x] constexpr bool is_const_iterator()const noexcept;
+// [o] constexpr bool is_const_iterator()const noexcept;
 TEST_UNIT(test_iterator_is_const_iterator){
+    using element_t=double;
+    using container_t=std::vector<element_t>;
+    using iterator_t=Iterator<container_t,element_t>;
+    using const_iterator_t=Iterator<container_t const,element_t const>;
+    using reverse_iterator_t=Iterator<container_t,element_t,true>;
+    using const_reverse_iterator_t=Iterator<container_t const,element_t const,true>;
 
+    container_t container{0,1,2,3,4,5,6,7,8,9,10};
+
+    iterator_t iter(nullptr,0);
+    TEST_CASE(iter.is_const_iterator()==false);
+
+    iter=iterator_t(&container,0);
+    TEST_CASE(iter.is_const_iterator()==false);
+
+    const_iterator_t const_iter(nullptr,0);
+    TEST_CASE(const_iter.is_const_iterator()==true);
+
+    const_iter=const_iterator_t(&container,0);
+    TEST_CASE(const_iter.is_const_iterator()==true);
+
+    reverse_iterator_t reverse_iter(nullptr,0);
+    TEST_CASE(reverse_iter.is_const_iterator()==false);
+
+    reverse_iter=reverse_iterator_t(&container,0);
+    TEST_CASE(reverse_iter.is_const_iterator()==false);
+
+    const_reverse_iterator_t const_reverse_iter(nullptr,0);
+    TEST_CASE(const_reverse_iter.is_const_iterator()==true);
+
+    const_reverse_iter=const_reverse_iterator_t(&container,0);
+    TEST_CASE(const_reverse_iter.is_const_iterator()==true);
 }
-// [x] constexpr bool is_reverse_iterator()const noexcept;
+// [o] constexpr bool is_reverse_iterator()const noexcept;
 TEST_UNIT(test_iterator_is_reverse_iterator){
+    using element_t=double;
+    using container_t=std::vector<element_t>;
+    using iterator_t=Iterator<container_t,element_t>;
+    using const_iterator_t=Iterator<container_t const,element_t const>;
+    using reverse_iterator_t=Iterator<container_t,element_t,true>;
+    using const_reverse_iterator_t=Iterator<container_t const,element_t const,true>;
 
+    container_t container{0,1,2,3,4,5,6,7,8,9,10};
+
+    iterator_t iter(nullptr,0);
+    TEST_CASE(iter.is_reverse_iterator()==false);
+
+    iter=iterator_t(&container,0);
+    TEST_CASE(iter.is_reverse_iterator()==false);
+
+    const_iterator_t const_iter(nullptr,0);
+    TEST_CASE(const_iter.is_reverse_iterator()==false);
+
+    const_iter=const_iterator_t(&container,0);
+    TEST_CASE(const_iter.is_reverse_iterator()==false);
+
+    reverse_iterator_t reverse_iter(nullptr,0);
+    TEST_CASE(reverse_iter.is_reverse_iterator()==true);
+
+    reverse_iter=reverse_iterator_t(&container,0);
+    TEST_CASE(reverse_iter.is_reverse_iterator()==true);
+
+    const_reverse_iterator_t const_reverse_iter(nullptr,0);
+    TEST_CASE(const_reverse_iter.is_reverse_iterator()==true);
+
+    const_reverse_iter=const_reverse_iterator_t(&container,0);
+    TEST_CASE(const_reverse_iter.is_reverse_iterator()==true);
 }
 #endif//__TEST_ITERATOR_HPP__
