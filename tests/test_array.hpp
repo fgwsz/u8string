@@ -42,18 +42,18 @@
 // [o] constexpr Array<_Type>& operator+=(Array<_Type> const& array)noexcept;
 // [o] constexpr Array<_Type> operator+(Array<_Type> const& array)const noexcept;
 // [o] constexpr Array<_Type> sub_array(size_t index,size_t count)const noexcept;
-// [x] constexpr iterator begin()noexcept;
-// [x] constexpr iterator end()noexcept;
-// [x] constexpr const_iterator begin()const noexcept;
-// [x] constexpr const_iterator end()const noexcept;
-// [x] constexpr const_iterator cbegin()const noexcept;
-// [x] constexpr const_iterator cend()const noexcept;
-// [x] constexpr reverse_iterator rbegin()noexcept;
-// [x] constexpr reverse_iterator rend()noexcept;
-// [x] constexpr const_reverse_iterator rbegin()const noexcept;
-// [x] constexpr const_reverse_iterator rend()const noexcept;
-// [x] constexpr const_reverse_iterator crbegin()const noexcept;
-// [x] constexpr const_reverse_iterator crend()const noexcept;
+// [o] consteopr iterator begin()noeocept;
+// [o] consteopr iterator end()noeocept;
+// [o] consteopr const_iterator begin()const noeocept;
+// [o] consteopr const_iterator end()const noeocept;
+// [o] consteopr const_iterator cbegin()const noeocept;
+// [o] consteopr const_iterator cend()const noeocept;
+// [o] consteopr reverse_iterator rbegin()noeocept;
+// [o] consteopr reverse_iterator rend()noeocept;
+// [o] consteopr const_reverse_iterator rbegin()const noeocept;
+// [o] consteopr const_reverse_iterator rend()const noeocept;
+// [o] consteopr const_reverse_iterator crbegin()const noeocept;
+// [o] consteopr const_reverse_iterator crend()const noeocept;
 // [x] template<typename _Func>
 //     constexpr auto map(_Func&& func)const noexcept
 //         ->Array<std::remove_cvref_t<decltype(std::forward<_Func>(func)(_Type{}))>>;
@@ -875,78 +875,299 @@ TEST_UNIT(test_array_sub_array){
     TEST_CASE(ret.size()==0);
     TEST_CASE(ret.capacity()>=0);
 }
-// [x] constexpr iterator begin()noexcept;
+// [o] constexpr iterator begin()noexcept;
 TEST_UNIT(test_array_begin){
+    using type=double;
 
+    Array<type> arr={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr.begin().index()==0);
+    TEST_CASE(*(arr.begin())==0);
+    TEST_CASE(arr.begin()!=arr.end());
+
+    arr={};
+    TEST_CASE(arr.begin().index()==0);
+    TEST_CASE(arr.begin()==arr.end());
 }
-// [x] constexpr iterator end()noexcept;
+// [o] constexpr iterator end()noexcept;
 TEST_UNIT(test_array_end){
+    using type=double;
 
+    Array<type> arr={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr.end().index()==11);
+    TEST_CASE(arr.end()!=arr.begin());
+
+    arr={};
+    TEST_CASE(arr.end().index()==0);
+    TEST_CASE(arr.end()==arr.begin());
 }
-// [x] constexpr const_iterator begin()const noexcept;
+// [o] constexpr const_iterator begin()const noexcept;
 TEST_UNIT(test_array_const_begin){
+    using type=double;
 
+    Array<type> const arr_1={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr_1.begin().index()==0);
+    TEST_CASE(*(arr_1.begin())==0);
+    TEST_CASE(arr_1.begin()!=arr_1.end());
+
+    Array<type> const arr_2={};
+    TEST_CASE(arr_2.begin().index()==0);
+    TEST_CASE(arr_2.begin()==arr_2.end());
 }
-// [x] constexpr const_iterator end()const noexcept;
+// [o] constexpr const_iterator end()const noexcept;
 TEST_UNIT(test_array_const_end){
+    using type=double;
 
+    Array<type> const arr_1={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr_1.end().index()==11);
+    TEST_CASE(arr_1.end()!=arr_1.begin());
+
+    Array<type> const arr_2={};
+    TEST_CASE(arr_2.end().index()==0);
+    TEST_CASE(arr_2.end()==arr_2.begin());
 }
-// [x] constexpr const_iterator cbegin()const noexcept;
+// [o] constexpr const_iterator cbegin()const noexcept;
 TEST_UNIT(test_array_cbegin){
+    using type=double;
 
+    Array<type> arr={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr.cbegin().index()==0);
+    TEST_CASE(*(arr.cbegin())==0);
+    TEST_CASE(arr.cbegin()!=arr.cend());
+
+    arr={};
+    TEST_CASE(arr.cbegin().index()==0);
+    TEST_CASE(arr.cbegin()==arr.cend());
 }
-// [x] constexpr const_iterator cend()const noexcept;
+// [o] constexpr const_iterator cend()const noexcept;
 TEST_UNIT(test_array_cend){
+    using type=double;
 
+    Array<type> arr={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr.cend().index()==11);
+    TEST_CASE(arr.cend()!=arr.cbegin());
+
+    arr={};
+    TEST_CASE(arr.cend().index()==0);
+    TEST_CASE(arr.cend()==arr.cbegin());
 }
-// [x] constexpr reverse_iterator rbegin()noexcept;
+// [o] constexpr reverse_iterator rbegin()noexcept;
 TEST_UNIT(test_array_rbegin){
+    using type=double;
 
+    Array<type> arr={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr.rbegin().index()==10);
+    TEST_CASE(*(arr.rbegin())==10);
+    TEST_CASE(arr.rbegin()!=arr.rend());
+
+    arr={};
+    TEST_CASE(arr.rbegin().index()==-1);
+    TEST_CASE(arr.rbegin()==arr.rend());
 }
-// [x] constexpr reverse_iterator rend()noexcept;
+// [o] constexpr reverse_iterator rend()noexcept;
 TEST_UNIT(test_array_rend){
+    using type=double;
 
+    Array<type> arr={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr.rend().index()==-1);
+    TEST_CASE(arr.rend()!=arr.rbegin());
+
+    arr={};
+    TEST_CASE(arr.rend().index()==-1);
+    TEST_CASE(arr.rend()==arr.rbegin());
 }
-// [x] constexpr const_reverse_iterator rbegin()const noexcept;
+// [o] constexpr const_reverse_iterator rbegin()const noexcept;
 TEST_UNIT(test_array_const_rbegin){
+    using type=double;
 
+    Array<type> const arr_1={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr_1.rbegin().index()==10);
+    TEST_CASE(*(arr_1.rbegin())==10);
+    TEST_CASE(arr_1.rbegin()!=arr_1.rend());
+
+    Array<type> const arr_2={};
+    TEST_CASE(arr_2.rbegin().index()==-1);
+    TEST_CASE(arr_2.rbegin()==arr_2.rend());
 }
-// [x] constexpr const_reverse_iterator rend()const noexcept;
+// [o] constexpr const_reverse_iterator rend()const noexcept;
 TEST_UNIT(test_array_const_rend){
+    using type=double;
 
+    Array<type> const arr_1={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr_1.rend().index()==-1);
+    TEST_CASE(arr_1.rend()!=arr_1.rbegin());
+
+    Array<type> const arr_2={};
+    TEST_CASE(arr_2.rend().index()==-1);
+    TEST_CASE(arr_2.rend()==arr_2.rbegin());
 }
-// [x] constexpr const_reverse_iterator crbegin()const noexcept;
+// [o] constexpr const_reverse_iterator crbegin()const noexcept;
 TEST_UNIT(test_array_crbegin){
+    using type=double;
 
+    Array<type> arr={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr.crbegin().index()==10);
+    TEST_CASE(*(arr.crbegin())==10);
+    TEST_CASE(arr.crbegin()!=arr.crend());
+
+    arr={};
+    TEST_CASE(arr.crbegin().index()==-1);
+    TEST_CASE(arr.crbegin()==arr.crend());
 }
-// [x] constexpr const_reverse_iterator crend()const noexcept;
+// [o] constexpr const_reverse_iterator crend()const noexcept;
 TEST_UNIT(test_array_crend){
+    using type=double;
 
+    Array<type> arr={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr.crend().index()==-1);
+    TEST_CASE(arr.crend()!=arr.crbegin());
+
+    arr={};
+    TEST_CASE(arr.crend().index()==-1);
+    TEST_CASE(arr.crend()==arr.crbegin());
 }
 // [x] template<typename _Func>
 //     constexpr auto map(_Func&& func)const noexcept
 //         ->Array<std::remove_cvref_t<decltype(std::forward<_Func>(func)(_Type{}))>>;
 TEST_UNIT(test_array_map){
+    using type=double;
 
+    Array<type> arr={0,1,2,3,4,5,6,7,8,9,10};
+    auto ret=arr.map([](auto const& element){
+        return static_cast<size_t>(element)+100;
+    });
+    TEST_CASE(ret==Array<size_t>{100,101,102,103,104,105,106,107,108,109,110});
+
+    arr={};
+    ret=arr.map([](auto const& element){
+        return static_cast<size_t>(element)+100;
+    });
+    TEST_CASE(ret==Array<size_t>{});
 }
 // [x] template<typename _Func>
 //     constexpr _Type reduce(_Func&& func)const noexcept;
 TEST_UNIT(test_array_reduce){
+    using type=double;
 
+    Array<type> arr={0,1,2,3,4,5,6,7,8,9,10};
+    auto ret=arr.reduce([](auto const& e1,auto const& e2){
+        return e1+e2;
+    });
+    TEST_CASE(ret==0+1+2+3+4+5+6+7+8+9+10);
+
+    arr={};
+    ret=arr.reduce([](auto const& e1,auto const& e2){
+        return e1+e2;
+    });
+    TEST_CASE(ret==0);
 }
 // [x] template<typename _Func,typename _Ret=_Type>
 //     constexpr _Ret reduce(_Func&& func,_Ret&& init)const noexcept;
 TEST_UNIT(test_array_reduce_with_init){
+    using type=double;
 
+    Array<type> arr={0,1,2,3,4,5,6,7,8,9,10};
+    auto ret=arr.reduce([](auto const& e1,auto const& e2){
+        return e1+static_cast<size_t>(e2);
+    },static_cast<size_t>(100));
+    TEST_CASE(ret==100+0+1+2+3+4+5+6+7+8+9+10);
+
+    arr={};
+    ret=arr.reduce([](auto const& e1,auto const& e2){
+        return e1+static_cast<size_t>(e2);
+    },static_cast<size_t>(100));
+    TEST_CASE(ret==100);
 }
 // [x] template<typename _Func>
 //     constexpr Array<_Type> filter(_Func&& func)const noexcept;
+TEST_UNIT(test_array_filter){
+    using type=double;
+
+    Array<type> arr={0,1,2,3,4,5,6,7,8,9,10};
+    auto ret=arr.filter([](auto const& element){
+        return static_cast<size_t>(element)%2!=0;
+    });
+    TEST_CASE(ret==Array<type>{1,3,5,7,9});
+
+    arr={};
+    ret=arr.filter([](auto const& element){
+        return static_cast<size_t>(element)%2!=0;
+    });
+    TEST_CASE(ret==Array<type>{});
+}
 // [x] template<typename _Func>
 //     constexpr Array<_Type>& foreach_iterator(_Func&& func)noexcept;
+TEST_UNIT(test_array_foreach_iterator){
+    using type=double;
+
+    Array<type> arr={0,1,2,3,4,5,6,7,8,9,10};
+    arr.foreach_iterator([](auto const& iter){
+        (*iter)+=100;
+    });
+    TEST_CASE(arr==Array<type>{100,101,102,103,104,105,106,107,108,109,110});
+
+    arr={};
+    arr.foreach_iterator([](auto const& iter){
+        (*iter)+=100;
+    });
+    TEST_CASE(arr==Array<type>{});
+}
 // [x] template<typename _Func>
 //     constexpr Array<_Type>& foreach_iterator(_Func&& func)const noexcept;
+TEST_UNIT(test_array_const_foreach_iterator){
+    using type=double;
+
+    Array<type> const arr_1={0,1,2,3,4,5,6,7,8,9,10};
+    Array<type> ret;
+    arr_1.foreach_iterator([&ret](auto const& iter){
+        ret.push_back((*iter)+100);
+    });
+    TEST_CASE(ret==Array<type>{100,101,102,103,104,105,106,107,108,109,110});
+
+    ret={};
+    Array<type> const arr_2={};
+    arr_2.foreach_iterator([&ret](auto const& iter){
+        ret.push_back((*iter)+100);
+    });
+    TEST_CASE(ret==Array<type>{});
+}
 // [x] template<typename _Func>
 //     constexpr Array<_Type>& foreach_reverse_iterator(_Func&& func)noexcept;
+TEST_UNIT(test_array_foreach_reverse_iterator){
+    using type=int;
+
+    Array<type> arr={0,1,2,3,4,5,6,7,8,9,10};
+    arr.foreach_reverse_iterator([](decltype(arr)::reverse_iterator const& iter){
+        if((*iter)%2==0){
+            iter.container()->erase(static_cast<size_t>(iter.index()));
+        }
+    });
+    TEST_CASE(arr==Array<type>{1,3,5,7,9});
+
+    arr={};
+    arr.foreach_reverse_iterator([](decltype(arr)::reverse_iterator const& iter){
+        if((*iter)%2==0){
+            iter.container()->erase(static_cast<size_t>(iter.index()));
+        }
+    });
+    TEST_CASE(arr==Array<type>{});
+}
 // [x] template<typename _Func>
 //     constexpr Array<_Type>& foreach_reverse_iterator(_Func&& func)const noexcept;
+TEST_UNIT(test_array_const_foreach_reverse_iterator){
+    using type=double;
+
+    Array<type> const arr_1={0,1,2,3,4,5,6,7,8,9,10};
+    Array<type> ret;
+    arr_1.foreach_reverse_iterator([&ret](auto const& iter){
+        ret.push_back(*iter);
+    });
+    TEST_CASE(ret==Array<type>{10,9,8,7,6,5,4,3,2,1,0});
+
+    ret={};
+    Array<type> const arr_2={};
+    arr_2.foreach_iterator([&ret](auto const& iter){
+        ret.push_back(*iter);
+    });
+    TEST_CASE(ret==Array<type>{});
+}
 #endif//__TEST_ARRAY_HPP__

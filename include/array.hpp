@@ -106,13 +106,13 @@ public:
     constexpr Array<_Type>& foreach_iterator(_Func&& func)noexcept;
     // _Func:(const_iterator iter)->ret no use
     template<typename _Func>
-    constexpr Array<_Type>& foreach_iterator(_Func&& func)const noexcept;
+    constexpr Array<_Type> const& foreach_iterator(_Func&& func)const noexcept;
     // _Func:(reverse_iterator iter)->ret no use
     template<typename _Func>
     constexpr Array<_Type>& foreach_reverse_iterator(_Func&& func)noexcept;
     // _Func:(const_reverse_iterator iter)->ret no use
     template<typename _Func>
-    constexpr Array<_Type>& foreach_reverse_iterator(_Func&& func)const noexcept;
+    constexpr Array<_Type> const& foreach_reverse_iterator(_Func&& func)const noexcept;
 
     using value_type=_Type;
 private:
@@ -503,7 +503,7 @@ constexpr typename Array<_Type>::const_reverse_iterator Array<_Type>::rend()cons
 template<typename _Type>
 constexpr typename Array<_Type>::const_reverse_iterator Array<_Type>::crbegin()const noexcept{
     return const_reverse_iterator(this,
-        static_cast<typename Array<_Type>::const_reserve_iterator::index_t>(this->size_)-1);
+        static_cast<typename Array<_Type>::const_reverse_iterator::index_t>(this->size_)-1);
 }
 template<typename _Type>
 constexpr typename Array<_Type>::const_reverse_iterator Array<_Type>::crend()const noexcept{
@@ -582,7 +582,7 @@ constexpr Array<_Type>& Array<_Type>::foreach_iterator(_Func&& func)noexcept{
 }
 template<typename _Type>
 template<typename _Func>
-constexpr Array<_Type>& Array<_Type>::foreach_iterator(_Func&& func)const noexcept{
+constexpr Array<_Type> const& Array<_Type>::foreach_iterator(_Func&& func)const noexcept{
     for(auto iter=this->cbegin();iter!=this->cend();++iter){
         std::forward<_Func>(func)(iter);
     }
@@ -598,7 +598,7 @@ constexpr Array<_Type>& Array<_Type>::foreach_reverse_iterator(_Func&& func)noex
 }
 template<typename _Type>
 template<typename _Func>
-constexpr Array<_Type>& Array<_Type>::foreach_reverse_iterator(_Func&& func)const noexcept{
+constexpr Array<_Type> const& Array<_Type>::foreach_reverse_iterator(_Func&& func)const noexcept{
     for(auto iter=this->crbegin();iter!=this->crend();++iter){
         std::forward<_Func>(func)(iter);
     }
