@@ -54,22 +54,22 @@
 // [o] consteopr const_reverse_iterator rend()const noeocept;
 // [o] consteopr const_reverse_iterator crbegin()const noeocept;
 // [o] consteopr const_reverse_iterator crend()const noeocept;
-// [x] template<typename _Func>
+// [o] template<typename _Func>
 //     constexpr auto map(_Func&& func)const noexcept
 //         ->Array<std::remove_cvref_t<decltype(std::forward<_Func>(func)(_Type{}))>>;
-// [x] template<typename _Func>
+// [o] template<typename _Func>
 //     constexpr _Type reduce(_Func&& func)const noexcept;
-// [x] template<typename _Func,typename _Ret=_Type>
+// [o] template<typename _Func,typename _Ret=_Type>
 //     constexpr _Ret reduce(_Func&& func,_Ret&& init)const noexcept;
-// [x] template<typename _Func>
+// [o] template<typename _Func>
 //     constexpr Array<_Type> filter(_Func&& func)const noexcept;
-// [x] template<typename _Func>
+// [o] template<typename _Func>
 //     constexpr Array<_Type>& foreach_iterator(_Func&& func)noexcept;
-// [x] template<typename _Func>
+// [o] template<typename _Func>
 //     constexpr Array<_Type>& foreach_iterator(_Func&& func)const noexcept;
-// [x] template<typename _Func>
+// [o] template<typename _Func>
 //     constexpr Array<_Type>& foreach_reverse_iterator(_Func&& func)noexcept;
-// [x] template<typename _Func>
+// [o] template<typename _Func>
 //     constexpr Array<_Type>& foreach_reverse_iterator(_Func&& func)const noexcept;
 
 // [o] constexpr Array()noexcept;
@@ -1025,7 +1025,7 @@ TEST_UNIT(test_array_crend){
     TEST_CASE(arr.crend().index()==-1);
     TEST_CASE(arr.crend()==arr.crbegin());
 }
-// [x] template<typename _Func>
+// [o] template<typename _Func>
 //     constexpr auto map(_Func&& func)const noexcept
 //         ->Array<std::remove_cvref_t<decltype(std::forward<_Func>(func)(_Type{}))>>;
 TEST_UNIT(test_array_map){
@@ -1043,7 +1043,7 @@ TEST_UNIT(test_array_map){
     });
     TEST_CASE(ret==Array<size_t>{});
 }
-// [x] template<typename _Func>
+// [o] template<typename _Func>
 //     constexpr _Type reduce(_Func&& func)const noexcept;
 TEST_UNIT(test_array_reduce){
     using type=double;
@@ -1060,7 +1060,7 @@ TEST_UNIT(test_array_reduce){
     });
     TEST_CASE(ret==0);
 }
-// [x] template<typename _Func,typename _Ret=_Type>
+// [o] template<typename _Func,typename _Ret=_Type>
 //     constexpr _Ret reduce(_Func&& func,_Ret&& init)const noexcept;
 TEST_UNIT(test_array_reduce_with_init){
     using type=double;
@@ -1077,7 +1077,7 @@ TEST_UNIT(test_array_reduce_with_init){
     },static_cast<size_t>(100));
     TEST_CASE(ret==100);
 }
-// [x] template<typename _Func>
+// [o] template<typename _Func>
 //     constexpr Array<_Type> filter(_Func&& func)const noexcept;
 TEST_UNIT(test_array_filter){
     using type=double;
@@ -1094,7 +1094,7 @@ TEST_UNIT(test_array_filter){
     });
     TEST_CASE(ret==Array<type>{});
 }
-// [x] template<typename _Func>
+// [o] template<typename _Func>
 //     constexpr Array<_Type>& foreach_iterator(_Func&& func)noexcept;
 TEST_UNIT(test_array_foreach_iterator){
     using type=double;
@@ -1111,7 +1111,7 @@ TEST_UNIT(test_array_foreach_iterator){
     });
     TEST_CASE(arr==Array<type>{});
 }
-// [x] template<typename _Func>
+// [o] template<typename _Func>
 //     constexpr Array<_Type>& foreach_iterator(_Func&& func)const noexcept;
 TEST_UNIT(test_array_const_foreach_iterator){
     using type=double;
@@ -1130,7 +1130,7 @@ TEST_UNIT(test_array_const_foreach_iterator){
     });
     TEST_CASE(ret==Array<type>{});
 }
-// [x] template<typename _Func>
+// [o] template<typename _Func>
 //     constexpr Array<_Type>& foreach_reverse_iterator(_Func&& func)noexcept;
 TEST_UNIT(test_array_foreach_reverse_iterator){
     using type=int;
@@ -1151,7 +1151,7 @@ TEST_UNIT(test_array_foreach_reverse_iterator){
     });
     TEST_CASE(arr==Array<type>{});
 }
-// [x] template<typename _Func>
+// [o] template<typename _Func>
 //     constexpr Array<_Type>& foreach_reverse_iterator(_Func&& func)const noexcept;
 TEST_UNIT(test_array_const_foreach_reverse_iterator){
     using type=double;
