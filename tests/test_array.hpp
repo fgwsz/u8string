@@ -26,7 +26,7 @@
 // [o] constexpr void clear()noexcept;
 // [o] constexpr bool get_element(size_t index,_Type& value)const noexcept;
 // [o] constexpr bool set_element(size_t index,_Type const& value)noexcept;
-// [x] constexpr bool swap_element(size_t lhs_index,size_t rhs_index)noexcept;
+// [o] constexpr bool swap_element(size_t lhs_index,size_t rhs_index)noexcept;
 // [o] constexpr _Type& operator[](size_t index)noexcept;
 // [o] constexpr _Type const& operator[](size_t index)const noexcept;
 // [o] constexpr size_t capacity()const noexcept;
@@ -530,7 +530,7 @@ TEST_UNIT(test_array_set_element){
 
     TEST_CASE(arr.set_element(100,-1)==false);
 }
-// [x] constexpr bool swap_element(size_t lhs_index,size_t rhs_index)noexcept;
+// [o] constexpr bool swap_element(size_t lhs_index,size_t rhs_index)noexcept;
 TEST_UNIT(test_array_swap_element){
     using type=double;
 
