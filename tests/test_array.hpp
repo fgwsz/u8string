@@ -26,6 +26,7 @@
 // [o] constexpr void clear()noexcept;
 // [o] constexpr bool get_element(size_t index,_Type& value)const noexcept;
 // [o] constexpr bool set_element(size_t index,_Type const& value)noexcept;
+// [x] constexpr bool swap_element(size_t lhs_index,size_t rhs_index)noexcept;
 // [o] constexpr _Type& operator[](size_t index)noexcept;
 // [o] constexpr _Type const& operator[](size_t index)const noexcept;
 // [o] constexpr size_t capacity()const noexcept;
@@ -528,6 +529,52 @@ TEST_UNIT(test_array_set_element){
     TEST_CASE(arr.capacity()>=15);
 
     TEST_CASE(arr.set_element(100,-1)==false);
+}
+// [x] constexpr bool swap_element(size_t lhs_index,size_t rhs_index)noexcept;
+TEST_UNIT(test_array_swap_element){
+    using type=double;
+
+    Array<type> arr;
+    TEST_CASE(arr.swap_element(0,10)==false);
+    TEST_CASE(arr==Array<type>{});
+    TEST_CASE(arr.size()==0);
+    TEST_CASE(arr.capacity()>=0);
+
+    arr={};
+    TEST_CASE(arr.swap_element(5,5)==false);
+    TEST_CASE(arr==Array<type>{});
+    TEST_CASE(arr.size()==0);
+    TEST_CASE(arr.capacity()>=0);
+
+    arr={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr.swap_element(0,10)==true);
+    TEST_CASE(arr==Array<type>{10,1,2,3,4,5,6,7,8,9,0});
+    TEST_CASE(arr.size()==11);
+    TEST_CASE(arr.capacity()>=11);
+
+    arr={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr.swap_element(5,5)==false);
+    TEST_CASE(arr==Array<type>{0,1,2,3,4,5,6,7,8,9,10});
+    TEST_CASE(arr.size()==11);
+    TEST_CASE(arr.capacity()>=11);
+
+    arr={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr.swap_element(0,100)==false);
+    TEST_CASE(arr==Array<type>{0,1,2,3,4,5,6,7,8,9,10});
+    TEST_CASE(arr.size()==11);
+    TEST_CASE(arr.capacity()>=11);
+
+    arr={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr.swap_element(100,0)==false);
+    TEST_CASE(arr==Array<type>{0,1,2,3,4,5,6,7,8,9,10});
+    TEST_CASE(arr.size()==11);
+    TEST_CASE(arr.capacity()>=11);
+
+    arr={0,1,2,3,4,5,6,7,8,9,10};
+    TEST_CASE(arr.swap_element(100,100)==false);
+    TEST_CASE(arr==Array<type>{0,1,2,3,4,5,6,7,8,9,10});
+    TEST_CASE(arr.size()==11);
+    TEST_CASE(arr.capacity()>=11);
 }
 // [o] constexpr _Type& operator[](size_t index)noexcept;
 TEST_UNIT(test_array_operator_at){

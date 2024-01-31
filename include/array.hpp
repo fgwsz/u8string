@@ -41,7 +41,10 @@ public:
 
     constexpr bool get_element(size_t index,_Type& value)const noexcept;
     constexpr bool set_element(size_t index,_Type const& value)noexcept;
+    constexpr bool swap_element(size_t lhs_index,size_t rhs_index)noexcept;
+    // Do not check whether the index is out of range
     constexpr _Type& operator[](size_t index)noexcept;
+    // Do not check whether the index is out of range
     constexpr _Type const& operator[](size_t index)const noexcept;
 
     constexpr size_t capacity()const noexcept;
@@ -332,6 +335,18 @@ constexpr bool Array<_Type>::set_element(size_t index,_Type const& value)noexcep
         return this->insert(this->size_,value);
     }
     *((this->data_[index]).pointer_)=value;
+    return true;
+}
+template<typename _Type>
+constexpr bool Array<_Type>::swap_element(size_t lhs_index,size_t rhs_index)noexcept{
+    if(
+        lhs_index>=this->size_||
+        rhs_index>=this->size_||
+        lhs_index==rhs_index
+    ){
+        return false;
+    }
+    Array<_Type>::swap((this->data_[lhs_index]).pointer_,(this->data_[rhs_index]).pointer_);
     return true;
 }
 template<typename _Type>
