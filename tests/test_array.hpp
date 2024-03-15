@@ -57,7 +57,7 @@
 // [o] consteopr const_reverse_iterator crend()const noeocept;
 // [o] template<typename _Func>
 //     constexpr auto map(_Func&& func)const noexcept
-//         ->Array<std::remove_cvref_t<decltype(std::forward<_Func>(func)(_Type{}))>>;
+//         ->Array<std::decay_t<decltype(std::forward<_Func>(func)(_Type{}))>>;
 // [o] template<typename _Func>
 //     constexpr _Type reduce(_Func&& func)const noexcept;
 // [o] template<typename _Func,typename _Ret=_Type>
@@ -1074,7 +1074,7 @@ TEST_UNIT(test_array_crend){
 }
 // [o] template<typename _Func>
 //     constexpr auto map(_Func&& func)const noexcept
-//         ->Array<std::remove_cvref_t<decltype(std::forward<_Func>(func)(_Type{}))>>;
+//         ->Array<std::decay_t<decltype(std::forward<_Func>(func)(_Type{}))>>;
 TEST_UNIT(test_array_map){
     using type=double;
 

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __ARRAY_HPP__
+#define __ARRAY_HPP__
 extern "C"{
 #include<stddef.h> // size_t
 #include<limits.h> // SIZE_MAX
@@ -8,11 +9,14 @@ extern "C"{
 #include<utility> // std::move std::forward
 #include<new> // placement new
 #include<initializer_list> // std::initializer_list
-#include<type_traits> // std::remove_cvref_t
+#include<type_traits> // std::decay_t std::is_same_v
 #include"iterator.hpp"
 template<typename _Type>
 class Array final{
 public:
+    using value_type=std::decay_t<_Type>;
+    static_assert(std::is_same_v<_Type,value_type>);
+
     constexpr Array()noexcept;
     constexpr Array(Array<_Type> const& array)noexcept;
     constexpr Array(Array<_Type>&& array)noexcept;
@@ -90,7 +94,7 @@ public:
     // {E1,E2,...,En} --map(func)--> {func(E1),func(E2),...,func(En)}
     template<typename _Func>
     constexpr auto map(_Func&& func)const noexcept
-        ->Array<std::remove_cvref_t<decltype(std::forward<_Func>(func)(_Type{}))>>;
+        ->Array<std::decay_t<decltype(std::forward<_Func>(func)(_Type{}))>>;
     // _Func:(_Type value,_Type value)->_Type
     // {E1,E2,...,En} --reduce(func<like op(x,y)->z>,init)--> E1 op E2 ... op En
     template<typename _Func>
@@ -116,8 +120,6 @@ public:
     // _Func:(const_reverse_iterator iter)->ret no use
     template<typename _Func>
     constexpr Array<_Type> const& foreach_reverse_iterator(_Func&& func)const noexcept;
-
-    using value_type=_Type;
 private:
     struct Element{
         _Type* pointer_;
@@ -538,9 +540,9 @@ constexpr void Array<_Type>::auto_expand_capacity()noexcept{
 template<typename _Type>
 template<typename _Func>
 constexpr auto Array<_Type>::map(_Func&& func)const noexcept
-    ->Array<std::remove_cvref_t<decltype(std::forward<_Func>(func)(_Type{}))>>{
+    ->Array<std::decay_t<decltype(std::forward<_Func>(func)(_Type{}))>>{
     using type=
-        std::remove_cvref_t<decltype(std::forward<_Func>(func)(_Type{}))>;
+        std::decay_t<decltype(std::forward<_Func>(func)(_Type{}))>;
     Array<type> ret;
     for(auto const& element:(*this)){
         ret.push_back(std::forward<_Func>(func)(element));
@@ -652,3 +654,4 @@ constexpr void Array<_Type>::swap(_U& lhs,_U& rhs)noexcept{
     lhs=rhs;
     rhs=temp;
 }
+#endif//__ARRAY_HPP__

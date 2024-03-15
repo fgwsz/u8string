@@ -1,6 +1,6 @@
 #ifndef __TEST_U8CHAR_HPP__
 #define __TEST_U8CHAR_HPP__
-#include"u8char.h"
+#include"u8char.hpp"
 #include"test.hpp"
 // TEST API:
 // [o] constexpr U8Char()noexcept;
@@ -13,6 +13,7 @@
 // [o] constexpr size_t byte_count()const noexcept;
 // [o] constexpr byte_t operator[](size_t index)const noexcept;
 // [o] constexpr bool operator==(U8Char const& lhs,U8Char const& rhs)noexcept;
+// [o] constexpr bool empty()noexcept;
 // [o] constexpr bool operator!=(U8Char const& lhs,U8Char const& rhs)noexcept;
 // [o] constexpr bool operator< (U8Char const& lhs,U8Char const& rhs)noexcept;
 // [o] constexpr bool operator<=(U8Char const& lhs,U8Char const& rhs)noexcept;
@@ -127,6 +128,14 @@ TEST_UNIT(test_u8char_operator_eq){
     U8Char ch_2;
     ch_2="你";
     TEST_CASE(ch_2=="你");
+}
+// [o] constexpr bool empty()noexcept;
+TEST_UNIT(test_u8char_empty){
+    U8Char ch_1;
+    TEST_CASE(ch_1.empty());
+
+    U8Char ch_2("hello world");
+    TEST_CASE(!ch_2.empty());
 }
 // [o] constexpr bool operator!=(U8Char const& lhs,U8Char const& rhs)noexcept;
 TEST_UNIT(test_u8char_operator_not_eq){

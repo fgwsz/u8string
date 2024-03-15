@@ -75,7 +75,7 @@ void __Test::run()noexcept{
                 end_time - start_time
             ).count()*1000; // ms
         test_unit_is_pass=exception_string.empty()&&__Test::test_unit_errors.empty();
-        std::cout<<"[TEST] "<<__Test::test_unit_names[index]
+        std::cout<<"[TEST UNIT] "<<__Test::test_unit_names[index]
             <<" ["<<(test_unit_is_pass?"PASS":"FAIL")<<"] ("<<duration<<" ms)\n";
         std::cout<<"case:"<<__Test::test_unit_case_count<<","
             <<"pass:"<<__Test::test_unit_case_pass_count<<","
@@ -100,7 +100,7 @@ void __Test::run()noexcept{
             ++__Test::test_unit_fail_count;
         }
     }
-    std::cout<<"[TOTAL]\n";
+    std::cout<<"[TEST TOTAL]\n";
     std::cout<<"unit:"<<__Test::test_unit_count<<","
         <<"pass:"<<__Test::test_unit_pass_count<<","
         <<"fail:"<<__Test::test_unit_fail_count<<".\n";
